@@ -44,6 +44,8 @@ namespace api.Controllers
                 var appUser = new AppUser{
                     UserName = registerDto.Username,
                     Email = registerDto.Email,
+                    FirstName = registerDto.FirstName,
+                    LastName = registerDto.LastName,
                 };
 
                 var createdUser = await _userManager.CreateAsync(appUser, registerDto.Password);
@@ -143,6 +145,59 @@ namespace api.Controllers
             else {
                 return StatusCode(500, changePasswordResult.Errors);
             }
+        }
+
+        /// <summary>
+        /// Get user info
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("me")]
+        [Authorize]
+        public async Task<IActionResult> GetMe()
+        {
+            var username = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(username)) {
+                return Unauthorized("User not authenticated");
+            }
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName.ToLower() == username.ToLower());
+            if (user is null) {
+                return Unauthorized("Invalid username!");
+            }
+            return Ok(
+                new GetMeDto
+                {
+                    Username = user.UserName,
+                    Email = user.Email,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                }
+            );
+        }
+
+        /// <summary>
+        /// Updates user's first and last name
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        [HttpPut("updatenames")]
+        [Authorize]
+        public async Task<IActionResult> UpdateNames([FromBody] UpdateNamesDto updateNamesDto)
+        {
+            if (!ModelState.IsValid) {
+                return BadRequest(ModelState);
+            }
+            var username = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(username)) {
+                return Unauthorized("User not authenticated");
+            }
+            var user = await _userManager.FindByNameAsync(username);
+
+            user.FirstName = updateNamesDto.FirstName;
+            user.LastName = updateNamesDto.LastName;
+
+            await _userManager.UpdateAsync(user);
+            return Ok("Account updated successfully");
         }
     }
 }
