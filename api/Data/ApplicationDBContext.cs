@@ -9,16 +9,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Data
 {
-    public class AplicationDbContext : IdentityDbContext<AppUser>
+    public class ApplicationDBContext : IdentityDbContext<AppUser>
     {
-        public AplicationDbContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
+        public ApplicationDBContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
         {
-            
+
         }
+        public DbSet<Project> Projects { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<Project>(x => x.HasKey(p => new {p.Id}));
+
+            builder.Entity<Project>()
+                .HasOne(u => u.CreatedBy)
+                .WithMany(u => u.Projects)
+                .HasForeignKey(p => p.CreatedById);
+            
+            
 
             List<IdentityRole> roles = new List<IdentityRole>
             {

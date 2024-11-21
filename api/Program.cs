@@ -2,6 +2,7 @@ using System.Reflection;
 using api.Data;
 using api.Interfaces;
 using api.Models;
+using api.Repository;
 using api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -50,7 +51,7 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
 });
-builder.Services.AddDbContext<AplicationDbContext>(options =>
+builder.Services.AddDbContext<ApplicationDBContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")
 ));
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
@@ -59,7 +60,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
     options.Password.RequireLowercase = true;
     options.Password.RequiredLength = 5;
 })
-.AddEntityFrameworkStores<AplicationDbContext>();
+.AddEntityFrameworkStores<ApplicationDBContext>();
 
 builder.Services.AddAuthentication(options => {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -85,6 +86,7 @@ builder.Services.AddAuthentication(options => {
 
 
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 
 var app = builder.Build();
 
