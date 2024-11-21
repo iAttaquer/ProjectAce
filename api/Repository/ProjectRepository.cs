@@ -41,6 +41,14 @@ namespace api.Repository
             return await projects.ToListAsync();
         }
 
+        public async Task<List<Project>> GetAllByUserIdAsync(string userId)
+        {
+            var projects = _context.Projects.Include(p => p.CreatedBy)
+                .Where(p => p.CreatedById == userId).AsQueryable();
+
+            return await projects.ToListAsync();
+        }
+
         public async Task<Project?> GetByIdAsync(Guid id)
         {
             return await _context.Projects.Include(p => p.CreatedBy).FirstOrDefaultAsync(p => p.Id == id);

@@ -86,6 +86,24 @@ namespace api.Controllers
         }
 
         /// <summary>
+        /// Get all projects created by user
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("myprojects")]
+        [Authorize]
+        [AuthorizeUser]
+        public async Task<IActionResult> GetMyProjects()
+        {
+            var user = (AppUser)HttpContext.Items["User"];
+
+            var projects = await _projectRepo.GetAllByUserIdAsync(user.Id);
+
+            var projectsDto = projects.Select(p =>p.ToProjectDto());
+
+            return Ok(projectsDto);
+        }
+
+        /// <summary>
         /// Update a project. Only for creator of project
         /// </summary>
         /// <param name="id"></param>
