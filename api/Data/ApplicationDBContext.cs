@@ -16,6 +16,7 @@ namespace api.Data
 
         }
         public DbSet<Project> Projects { get; set; }
+        public DbSet<Assignment> Assignments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -25,10 +26,15 @@ namespace api.Data
 
             builder.Entity<Project>()
                 .HasOne(u => u.CreatedBy)
-                .WithMany(u => u.Projects)
+                .WithMany(p => p.Projects)
                 .HasForeignKey(p => p.CreatedById);
-            
-            
+
+            builder.Entity<Assignment>(x => x.HasKey(a => new {a.Id}));
+
+            builder.Entity<Assignment>()
+                .HasOne(u => u.CreatedBy)
+                .WithMany(a => a.Assignments)
+                .HasForeignKey(a => a.CreatedById);
 
             List<IdentityRole> roles = new List<IdentityRole>
             {

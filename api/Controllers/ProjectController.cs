@@ -21,11 +21,9 @@ namespace api.Controllers
     public class ProjectController : ControllerBase
     {
         private readonly IProjectRepository _projectRepo;
-        private readonly UserManager<AppUser> _userManager;
         public ProjectController(IProjectRepository projectRepo, UserManager<AppUser> userManager)
         {
             _projectRepo = projectRepo;
-            _userManager = userManager;
         }
 
         /// <summary>
@@ -125,7 +123,11 @@ namespace api.Controllers
             if (existingProject.CreatedById != user.Id) {
                 return Forbid();
             }
-            var project = await _projectRepo.UpdateAsync(id, updateDto.ToProjectFromDto());
+            existingProject.Name = updateDto.Name;
+            existingProject.Description = updateDto.Description;
+            existingProject.Status = updateDto.Status;
+
+            var project = await _projectRepo.UpdateAsync(existingProject);
 
             return Ok(project.ToProjectDto());
         }
@@ -151,8 +153,8 @@ namespace api.Controllers
             if (toDeleteProject.CreatedById != user.Id) {
                 return Forbid();
             }
-            var projectModel = await _projectRepo.DeleteAsync(id);
-            return Ok(projectModel.ToProjectDto());
+            await _projectRepo.DeleteAsync(toDeleteProject);
+            return NoContent();
         }
     }
 }

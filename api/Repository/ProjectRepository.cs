@@ -23,15 +23,11 @@ namespace api.Repository
             return project;
         }
 
-        public async Task<Project?> DeleteAsync(Guid id)
+        public async Task<Project?> DeleteAsync(Project project)
         {
-            var projectModel = await _context.Projects.FindAsync(id);
-            if (projectModel is null) {
-                return null;
-            }
-            _context.Projects.Remove(projectModel);
+            _context.Projects.Remove(project);
             await _context.SaveChangesAsync();
-            return projectModel;
+            return project;
         }
 
         public async Task<List<Project>> GetAllAsync()
@@ -51,21 +47,15 @@ namespace api.Repository
 
         public async Task<Project?> GetByIdAsync(Guid id)
         {
-            return await _context.Projects.Include(p => p.CreatedBy).FirstOrDefaultAsync(p => p.Id == id);
+            return await _context.Projects.Include(p => p.CreatedBy)
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<Project?> UpdateAsync(Guid id, Project project)
+        public async Task<Project?> UpdateAsync(Project project)
         {
-            var existingProject = await _context.Projects.FindAsync(id);
-
-            if (existingProject is null) {
-                return null;
-            }
-            existingProject.Name = project.Name;
-            existingProject.Description = project.Description;
-            existingProject.Status = project.Status;
+            _context.Entry(project).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-            return existingProject;
+            return project;
         }
     }
 }
