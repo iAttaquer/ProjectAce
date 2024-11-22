@@ -78,6 +78,73 @@ namespace api.Controllers
             return Ok(assignment.ToAssignmentDto());
         }
 
+        [HttpGet("my-assignments")]
+        [Authorize]
+        [AuthorizeUser]
+        public async Task<IActionResult> GetMyAssignments()
+        {
+            var user = (AppUser)HttpContext.Items["User"];
 
+            var assignments = await _assignmentRepo.GetAllByUserIdAsync(user.Id);
+
+            var assignmentDto = assignments.Select(a => a.ToAssignmentDto());
+
+            return Ok(assignmentDto);
+        }
+
+        /// <summary>
+        /// Update an assignment. Only for creator of assignment
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="updateDto"></param>
+        /// <returns></returns>
+        [HttpPut("{id:guid}")]
+        [Authorize]
+        [AuthorizeUser]
+        public async Task<IActionResult> Update(Guid id, CreateAssignmentDto updateDto)
+        {
+            if (!ModelState.IsValid) {
+                return BadRequest(ModelState);
+            }
+            var existingAssignment = await _assignmentRepo.GetByIdAsync(id);
+            if (existingAssignment is null) {
+                return NotFound("Assignment not found");
+            }
+            var user = (AppUser)HttpContext.Items["User"];
+            if (existingAssignment.CreatedById != user.Id) {
+                return Forbid();
+            }
+            existingAssignment.Name = updateDto.Name;
+            existingAssignment.Description = updateDto.Description;
+            existingAssignment.Status = updateDto.Status;
+
+            await _assignmentRepo.UpdateAsync(existingAssignment);
+            return Ok(existingAssignment.ToAssignmentDto());
+        }
+
+        /// <summary>
+        /// Delete an assignment. Only for creator of assignment
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("{id:guid}")]
+        [Authorize]
+        [AuthorizeUser]
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        {
+            if (!ModelState.IsValid) {
+                return BadRequest(ModelState);
+            }
+            var toDeleteAssignment = await _assignmentRepo.GetByIdAsync(id);
+            if (toDeleteAssignment is null) {
+                return NotFound("Assignment does not exist");
+            }
+            var user = (AppUser)HttpContext.Items["User"];
+            if (toDeleteAssignment.CreatedById != user.Id) {
+                return Forbid();
+            }
+            await _assignmentRepo.DeleteAsync(toDeleteAssignment);
+            return NoContent();
+        }
     }
 }

@@ -23,15 +23,11 @@ namespace api.Repository
             return assignment;
         }
 
-        public async Task<Assignment?> DeleteAsync(Guid id)
+        public async Task<Assignment?> DeleteAsync(Assignment assignment)
         {
-            var assignmentModel = await _context.Assignments.FindAsync(id);
-            if (assignmentModel is null) {
-                return null;
-            }
-            _context.Assignments.Remove(assignmentModel);
+            _context.Assignments.Remove(assignment);
             await _context.SaveChangesAsync();
-            return assignmentModel;
+            return assignment;
         }
 
         public async Task<List<Assignment>> GetAllAsync()
@@ -41,15 +37,24 @@ namespace api.Repository
             return await assignments.ToListAsync();
         }
 
+        public Task<List<Assignment>> GetAllByUserIdAsync(string userId)
+        {
+            var assignments = _context.Assignments.Include(a => a.CreatedBy)
+                .Where(a => a.CreatedById == userId).AsQueryable();
+            return assignments.ToListAsync();
+        }
+
         public async Task<Assignment?> GetByIdAsync(Guid id)
         {
             return await _context.Assignments.Include(a => a.CreatedBy)
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
 
-        public Task<Assignment> UpdateAsync(Guid id, Assignment assignment)
+        public async Task<Assignment> UpdateAsync(Assignment assignment)
         {
-            throw new NotImplementedException();
+            _context.Entry(assignment).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return assignment;
         }
     }
 }
