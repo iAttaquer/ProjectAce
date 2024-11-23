@@ -12,7 +12,7 @@ namespace api.Interfaces
         Task<Project?> GetByIdAsync(Guid id);
         Task<List<Project>> GetAllByUserIdAsync(string userId);
         Task<Project> CreateAsync(Project project);
-        Task<Project?> UpdateAsync(Guid id, Project project);
-        Task<Project?> DeleteAsync(Guid id);
+        Task<Project?> UpdateAsync(Project project);
+        Task<Project?> DeleteAsync(Project project);
     }
 }

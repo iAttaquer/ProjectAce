@@ -12,5 +12,6 @@ namespace api.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public List<Project> Projects { get; set; } = new List<Project>();
+        public List<Assignment> Assignments { get; set; } = new List<Assignment>();
     }
 }
