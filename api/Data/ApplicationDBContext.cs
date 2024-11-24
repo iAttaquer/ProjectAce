@@ -36,6 +36,11 @@ public class ApplicationDBContext : IdentityDbContext<AppUser>
             .WithMany(a => a.Assignments)
             .HasForeignKey(a => a.CreatedById);
 
+        builder.Entity<Assignment>()
+            .HasOne(a => a.Project)
+            .WithMany(p => p.Assignments)
+            .HasForeignKey(a => a.ProjectId);
+
         List<IdentityRole> roles = new List<IdentityRole>
             {
                 new IdentityRole

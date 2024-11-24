@@ -90,7 +90,7 @@ public class ProjectController : ControllerBase
     /// Get all projects created by user
     /// </summary>
     /// <returns></returns>
-    [HttpGet("myprojects")]
+    [HttpGet("my-projects")]
     [Authorize]
     [AuthorizeUser]
     public async Task<IActionResult> GetMyProjects()

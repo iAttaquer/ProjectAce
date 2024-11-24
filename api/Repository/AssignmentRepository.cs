@@ -37,11 +37,18 @@ public class AssignmentRepository : IAssignmentRepository
         return await assignments.ToListAsync();
     }
 
-    public Task<List<Assignment>> GetAllByUserIdAsync(string userId)
+    public async Task<List<Assignment>> GetAllByProjectIdAsync(Guid projectId)
+    {
+        var assignments = _context.Assignments.Include(a => a.CreatedBy)
+            .Where(a => a.ProjectId == projectId).AsQueryable();
+        return await assignments.ToListAsync();
+    }
+
+    public async Task<List<Assignment>> GetAllByUserIdAsync(string userId)
     {
         var assignments = _context.Assignments.Include(a => a.CreatedBy)
             .Where(a => a.CreatedById == userId).AsQueryable();
-        return assignments.ToListAsync();
+        return await assignments.ToListAsync();
     }
 
     public async Task<Assignment?> GetByIdAsync(Guid id)

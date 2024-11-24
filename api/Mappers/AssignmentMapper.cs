@@ -19,6 +19,7 @@ public static class AssignmentMapper
             Status = assignment.Status,
             CreatedAt = assignment.CreatedAt,
             CreatedBy = assignment.CreatedBy.UserName,
+            ProjectId = assignment.ProjectId,
         };
     }
     public static Assignment ToAssignmentFromDto(this CreateAssignmentDto assignmentDto)

@@ -154,7 +154,7 @@ public class AccountController : ControllerBase
     /// </summary>
     /// <param name="changePasswordDto"></param>
     /// <returns></returns>
-    [HttpPut("changepassword")]
+    [HttpPut("change-password")]
     [Authorize]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changePasswordDto)
     {
@@ -198,7 +198,7 @@ public class AccountController : ControllerBase
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
-    [HttpPut("updatenames")]
+    [HttpPut("update-names")]
     [Authorize]
     public async Task<IActionResult> UpdateNames([FromBody] UpdateNamesDto updateNamesDto)
     {

@@ -16,5 +16,5 @@ public class Project
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public string CreatedById { get; set; }
     public AppUser CreatedBy { get; set; }
-
+    public List<Assignment> Assignments { get; set; } = new List<Assignment>();
 }

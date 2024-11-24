@@ -17,9 +17,11 @@ namespace api.Controllers;
 public class AssignmentController : ControllerBase
 {
     private readonly IAssignmentRepository _assignmentRepo;
-    public AssignmentController(IAssignmentRepository assignmentRepo)
+    private readonly IProjectRepository _projectRepo;
+    public AssignmentController(IAssignmentRepository assignmentRepo, IProjectRepository projectRepo)
     {
         _assignmentRepo = assignmentRepo;
+        _projectRepo = projectRepo;
     }
 
     /// <summary>
@@ -27,14 +29,15 @@ public class AssignmentController : ControllerBase
     /// </summary>
     /// <param name="createAssignmentDto"></param>
     /// <returns></returns>
-    [HttpPost]
+    [HttpPost("{projectId:guid}")]
     [Authorize]
     [AuthorizeUser]
-    public async Task<IActionResult> Create([FromBody] CreateAssignmentDto createAssignmentDto)
+    public async Task<IActionResult> Create([FromRoute] Guid projectId, [FromBody] CreateAssignmentDto createAssignmentDto)
     {
         var user = (AppUser)HttpContext.Items["User"];
         var assignment = createAssignmentDto.ToAssignmentFromDto();
         assignment.CreatedById = user.Id;
+        assignment.ProjectId = projectId;
         await _assignmentRepo.CreateAsync(assignment);
         return CreatedAtAction(nameof(GetById), new { id = assignment.Id }, assignment.ToAssignmentDto());
     }
@@ -81,6 +84,10 @@ public class AssignmentController : ControllerBase
         return Ok(assignment.ToAssignmentDto());
     }
 
+    /// <summary>
+    /// Get all assignments created by user
+    /// </summary>
+    /// <returns></returns>
     [HttpGet("my-assignments")]
     [Authorize]
     [AuthorizeUser]
@@ -89,6 +96,28 @@ public class AssignmentController : ControllerBase
         var user = (AppUser)HttpContext.Items["User"];
 
         var assignments = await _assignmentRepo.GetAllByUserIdAsync(user.Id);
+
+        var assignmentDto = assignments.Select(a => a.ToAssignmentDto());
+
+        return Ok(assignmentDto);
+    }
+
+    [HttpGet("by-project/{projectId:guid}")]
+    [Authorize]
+    public async Task<IActionResult> GetByProjectId([FromRoute] Guid projectId)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        var project = await _projectRepo.GetByIdAsync(projectId);
+
+        if (project is null)
+        {
+            return NotFound("Project not found");
+        }
+
+        var assignments = await _assignmentRepo.GetAllByProjectIdAsync(projectId);
 
         var assignmentDto = assignments.Select(a => a.ToAssignmentDto());
 
