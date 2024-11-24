@@ -4,15 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Models;
 
-namespace api.Interfaces
+namespace api.Interfaces;
+
+public interface IAssignmentRepository
 {
-    public interface IAssignmentRepository
-    {
-        Task<List<Assignment>> GetAllAsync();
-        Task<Assignment?> GetByIdAsync(Guid id);
-        Task<List<Assignment>> GetAllByUserIdAsync(string userId);
-        Task<Assignment> CreateAsync(Assignment assignment);
-        Task<Assignment?> UpdateAsync(Assignment assignment);
-        Task<Assignment?> DeleteAsync(Assignment assignment);
-    }
+    Task<List<Assignment>> GetAllAsync();
+    Task<Assignment?> GetByIdAsync(Guid id);
+    Task<List<Assignment>> GetAllByUserIdAsync(string userId);
+    Task<Assignment> CreateAsync(Assignment assignment);
+    Task<Assignment?> UpdateAsync(Assignment assignment);
+    Task<Assignment?> DeleteAsync(Assignment assignment);
 }

@@ -5,13 +5,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 
-namespace api.Models
+namespace api.Models;
+
+public class AppUser : IdentityUser
 {
-    public class AppUser : IdentityUser
-    {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public List<Project> Projects { get; set; } = new List<Project>();
-        public List<Assignment> Assignments { get; set; } = new List<Assignment>();
-    }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public List<Project> Projects { get; set; } = new List<Project>();
+    public List<Assignment> Assignments { get; set; } = new List<Assignment>();
 }
