@@ -17,4 +17,5 @@ public class Project
     public string CreatedById { get; set; }
     public AppUser CreatedBy { get; set; }
     public List<Assignment> Assignments { get; set; } = new List<Assignment>();
+    public List<ProjectTeam> ProjectTeams { get; set; } = new List<ProjectTeam>();
 }

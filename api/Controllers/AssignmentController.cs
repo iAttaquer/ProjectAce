@@ -102,6 +102,11 @@ public class AssignmentController : ControllerBase
         return Ok(assignmentDto);
     }
 
+    /// <summary>
+    /// Get all assignments for a project
+    /// </summary>
+    /// <param name="projectId"></param>
+    /// <returns></returns>
     [HttpGet("by-project/{projectId:guid}")]
     [Authorize]
     public async Task<IActionResult> GetByProjectId([FromRoute] Guid projectId)

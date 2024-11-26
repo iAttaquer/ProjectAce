@@ -21,9 +21,12 @@ namespace api.Controllers;
 public class ProjectController : ControllerBase
 {
     private readonly IProjectRepository _projectRepo;
-    public ProjectController(IProjectRepository projectRepo, UserManager<AppUser> userManager)
+    private readonly IProjectTeamRepository _projectTeamRepo;
+    public ProjectController(IProjectRepository projectRepo,
+        IProjectTeamRepository projectTeamRepo)
     {
         _projectRepo = projectRepo;
+        _projectTeamRepo = projectTeamRepo;
     }
 
     /// <summary>
@@ -40,6 +43,7 @@ public class ProjectController : ControllerBase
         var projectModel = projectDto.ToProjectFromDto();
         projectModel.CreatedById = user.Id;
         await _projectRepo.CreateAsync(projectModel);
+        await _projectTeamRepo.CreateAsync(new ProjectTeam { ProjectId = projectModel.Id, MemberId = user.Id });
         return CreatedAtAction(nameof(GetById), new { id = projectModel.Id }, projectModel.ToProjectDto());
     }
 
@@ -163,6 +167,7 @@ public class ProjectController : ControllerBase
             return Forbid();
         }
         await _projectRepo.DeleteAsync(toDeleteProject);
+        await _projectTeamRepo.DeleteAllInProject(id);
         return NoContent();
     }
 }

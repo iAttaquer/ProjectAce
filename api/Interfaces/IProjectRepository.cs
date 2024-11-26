@@ -14,4 +14,5 @@ public interface IProjectRepository
     Task<Project> CreateAsync(Project project);
     Task<Project?> UpdateAsync(Project project);
     Task<Project?> DeleteAsync(Project project);
+    Task<bool> ExistsAsync(Guid id);
 }

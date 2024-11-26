@@ -220,5 +220,4 @@ public class AccountController : ControllerBase
         await _userManager.UpdateAsync(user);
         return Ok("Account updated successfully");
     }
-
 }
