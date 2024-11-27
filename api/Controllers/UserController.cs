@@ -29,4 +29,20 @@ public class UserController : ControllerBase
 
     return Ok(userDto);
   }
+
+  /// <summary>
+  /// Get user by id
+  /// </summary>
+  /// <param name="id"></param>
+  /// <returns></returns>
+  [HttpGet("{id:alpha}")]
+  [Authorize]
+  public async Task<IActionResult> GetUserById([FromRoute] string id)
+  {
+    var user = await _userRepository.GetByIdAsync(id);
+    if (user is null) {
+      return NotFound("User not found");
+    }
+    return Ok(user.ToUserDto());
+  }
 }

@@ -10,6 +10,7 @@ public interface IProjectTeamRepository
 {
     Task<List<ProjectTeam>> GetAllAsync();
     Task<ProjectTeam> CreateAsync(ProjectTeam projectTeam);
+    Task DeleteAsync(ProjectTeam projectTeam);
     Task<bool> IsMemberInProject(Guid projectId, string memberId);
     Task DeleteAllInProject(Guid projectId);
 }

@@ -38,7 +38,7 @@ public class ProjectTeamController : ControllerBase
     [HttpPost("{projectId}/member/{userId}")]
     [Authorize]
     [AuthorizeUser]
-    public async Task<IActionResult> Create(
+    public async Task<IActionResult> AddMember(
         [FromRoute] Guid projectId,
         [FromRoute] string userId
         )
@@ -94,5 +94,41 @@ public class ProjectTeamController : ControllerBase
         var members = await _projectTeamRepo.GetAllAsync();
         var userDto = members.Select(u => u.ToUserDto());
         return Ok(userDto);
+    }
+
+    /// <summary>
+    /// Removes user from project
+    /// </summary>
+    /// <param name="projectId"></param>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    [HttpDelete("{projectId:guid}/member/{userId}")]
+    [Authorize]
+    [AuthorizeUser]
+    public async Task<IActionResult> DeleteMember(
+        [FromRoute] Guid projectId,
+        [FromRoute] string userId
+        )
+    {
+        if (!ModelState.IsValid) {
+            return BadRequest(ModelState);
+        }
+        var project = await _projectRepo.GetByIdAsync(projectId);
+        if (project is null) {
+            return NotFound("Project not found");
+        }
+        var user = (AppUser)HttpContext.Items["User"];
+        if (project.CreatedById != user.Id) {
+            return Forbid("You are not a creator of project");
+        }
+        if (user.Id == userId) {
+            return BadRequest("You can't remove yourself from project");
+        }
+        if (!await _projectTeamRepo.IsMemberInProject(projectId, userId)) {
+            return NotFound("Member is not in project");
+        }
+        var toDelete = new ProjectTeam { ProjectId = projectId, MemberId = userId };
+        await _projectTeamRepo.DeleteAsync(toDelete);
+        return NoContent();
     }
 }
