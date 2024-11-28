@@ -17,6 +17,7 @@ public class ApplicationDBContext : IdentityDbContext<AppUser>
     }
     public DbSet<Project> Projects { get; set; }
     public DbSet<Assignment> Assignments { get; set; }
+    public DbSet<ProjectTeam> ProjectTeams { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -40,6 +41,19 @@ public class ApplicationDBContext : IdentityDbContext<AppUser>
             .HasOne(a => a.Project)
             .WithMany(p => p.Assignments)
             .HasForeignKey(a => a.ProjectId);
+
+        builder.Entity<ProjectTeam>()
+            .HasKey(t => new { t.ProjectId, t.MemberId });
+
+        builder.Entity<ProjectTeam>()
+            .HasOne(u => u.Member)
+            .WithMany(t => t.ProjectTeams)
+            .HasForeignKey(t => t.MemberId);
+
+        builder.Entity<ProjectTeam>()
+            .HasOne(p => p.Project)
+            .WithMany(t => t.ProjectTeams)
+            .HasForeignKey(t => t.ProjectId);
 
         List<IdentityRole> roles = new List<IdentityRole>
             {

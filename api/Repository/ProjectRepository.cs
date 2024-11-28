@@ -30,6 +30,11 @@ public class ProjectRepository : IProjectRepository
         return project;
     }
 
+    public async Task<bool> ExistsAsync(Guid id)
+    {
+        return await _context.Projects.AnyAsync(p => p.Id == id);
+    }
+
     public async Task<List<Project>> GetAllAsync()
     {
         var projects = _context.Projects.Include(p => p.CreatedBy).AsQueryable();

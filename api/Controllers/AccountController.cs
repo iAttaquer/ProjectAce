@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using api.Interfaces;
 using System.Security.Claims;
 using api.Extensions;
+using api.Dtos.User;
 
 namespace api.Controllers;
 
@@ -35,6 +36,8 @@ public class AccountController : ControllerBase
     /// <param name="registerDto"></param>
     /// <returns></returns>
     [HttpPost("register")]
+    [ProducesResponseType(typeof(NewUserDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
     {
         try
@@ -90,6 +93,9 @@ public class AccountController : ControllerBase
     /// <param name="loginDto"></param>
     /// <returns></returns>
     [HttpPost("login")]
+    [ProducesResponseType(typeof(NewUserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
     {
         if (!ModelState.IsValid)
@@ -220,5 +226,4 @@ public class AccountController : ControllerBase
         await _userManager.UpdateAsync(user);
         return Ok("Account updated successfully");
     }
-
 }

@@ -13,4 +13,5 @@ public class AppUser : IdentityUser
     public string LastName { get; set; }
     public List<Project> Projects { get; set; } = new List<Project>();
     public List<Assignment> Assignments { get; set; } = new List<Assignment>();
+    public List<ProjectTeam> ProjectTeams { get; set; } = new List<ProjectTeam>();
 }
