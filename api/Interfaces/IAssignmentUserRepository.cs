@@ -9,4 +9,5 @@ public interface IAssignmentUserRepository
 {
     Task<List<AssignmentUser>> GetAllAsync();
     Task<AssignmentUser> CreateAsync(AssignmentUser assignmentUser);
+    Task<bool> IsMemeberAssignedTo(Guid assignmentId, string userId);
 }

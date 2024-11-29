@@ -21,8 +21,16 @@ public class AssignmentUserRepository : IAssignmentUserRepository
 
     public async Task<List<AssignmentUser>> GetAllAsync()
     {
-        var assignmentusers = _context.AssignmentUsers.Include(a => a.Assignment).Include(u => u.User).AsQueryable();
+        var assignmentusers = _context.AssignmentUsers
+            .Include(a => a.Assignment)
+            .Include(u => u.User)
+            .AsQueryable();
         return await assignmentusers.ToListAsync();
     }
 
+    public async Task<bool> IsMemeberAssignedTo(Guid assignmentId, string userId)
+    {
+        return await _context.AssignmentUsers.AnyAsync(
+            u => u.AssignmentId == assignmentId && u.UserId == userId);
+    }
 }
