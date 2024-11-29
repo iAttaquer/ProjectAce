@@ -37,6 +37,8 @@ public class ProjectController : ControllerBase
     [HttpPost]
     [Authorize]
     [AuthorizeUser]
+    [ProducesResponseType(typeof(ProjectDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreateProjectDto projectDto)
     {
         var user = (AppUser)HttpContext.Items["User"];

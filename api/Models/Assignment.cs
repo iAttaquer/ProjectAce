@@ -18,4 +18,5 @@ public class Assignment
     public string CreatedById { get; set; }
     public AppUser CreatedBy { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public List<AssignmentUser> AssignmentUsers { get; set; } = new List<AssignmentUser>();
 }

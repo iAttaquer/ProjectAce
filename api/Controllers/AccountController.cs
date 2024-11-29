@@ -38,6 +38,7 @@ public class AccountController : ControllerBase
     [HttpPost("register")]
     [ProducesResponseType(typeof(NewUserDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
     {
         try
@@ -131,6 +132,8 @@ public class AccountController : ControllerBase
     /// <returns></returns>
     [HttpGet("me")]
     [Authorize]
+    [ProducesResponseType(typeof(GetMeDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetMe()
     {
         var username = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -162,6 +165,10 @@ public class AccountController : ControllerBase
     /// <returns></returns>
     [HttpPut("change-password")]
     [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changePasswordDto)
     {
         if (!ModelState.IsValid)
@@ -206,6 +213,10 @@ public class AccountController : ControllerBase
     /// <returns></returns>
     [HttpPut("update-names")]
     [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdateNames([FromBody] UpdateNamesDto updateNamesDto)
     {
         if (!ModelState.IsValid)
