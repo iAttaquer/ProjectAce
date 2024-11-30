@@ -29,6 +29,12 @@ public class AssignmentUsersController : ControllerBase
     _projectTeamRepo = projectTeamRepo;
   }
 
+  /// <summary>
+  /// Adds a member to an assignment
+  /// </summary>
+  /// <param name="assignmentId"></param>
+  /// <param name="memberId"></param>
+  /// <returns></returns>
   [HttpPost("{assignmentId:guid}/{memberId}")]
   [Authorize]
   [AuthorizeUser]
@@ -61,6 +67,11 @@ public class AssignmentUsersController : ControllerBase
     return StatusCode(StatusCodes.Status201Created);
   }
 
+  /// <summary>
+  /// Get all members of an assignment
+  /// </summary>
+  /// <param name="assignmentId"></param>
+  /// <returns></returns>
   [HttpGet("{assignmentId:guid}")]
   [Authorize]
   [AuthorizeUser]
@@ -80,5 +91,42 @@ public class AssignmentUsersController : ControllerBase
     var users = await _assignmentUserRepo.GetAllAsync(assignmentId);
     var userDto = users.Select(u => u.ToUserDto());
     return Ok(userDto);
+  }
+
+  /// <summary>
+  /// Removes a member from an assignment
+  /// </summary>
+  /// <param name="assignmentId"></param>
+  /// <param name="memberId"></param>
+  /// <returns></returns>
+  [HttpDelete("{assignmentId:guid}/{memberId}")]
+  [Authorize]
+  [AuthorizeUser]
+  public async Task<IActionResult> RemoveMemberFromAssignment([FromRoute] Guid assignmentId, [FromRoute] string memberId)
+  {
+    if (!ModelState.IsValid) {
+      return BadRequest(ModelState);
+    }
+    var assignment = await _assignmentRepo.GetByIdAsync(assignmentId);
+    if (assignment is null) {
+      return NotFound("Assignment not found");
+    }
+    var member = await _userRepo.GetByIdAsync(memberId);
+    if (member is null) {
+      return NotFound("User not found");
+    }
+    var user = (AppUser)HttpContext.Items["User"];
+    if (!await _projectTeamRepo.IsMemberInProject(assignment.ProjectId, user.Id)) {
+      return Forbid("You are not a member of project");
+    }
+    if (!await _assignmentUserRepo.IsMemeberAssignedTo(assignmentId, memberId)) {
+      return NotFound("User is not assigned to assignment");
+    }
+    await _assignmentUserRepo.DeleteAsync(new AssignmentUser
+    {
+      AssignmentId = assignmentId,
+      UserId = memberId,
+    });
+    return Ok();
   }
 }

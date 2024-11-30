@@ -130,8 +130,11 @@ public class ProjectTeamController : ControllerBase
         if (!await _projectTeamRepo.IsMemberInProject(projectId, userId)) {
             return NotFound("Member is not in project");
         }
-        var toDelete = new ProjectTeam { ProjectId = projectId, MemberId = userId };
-        await _projectTeamRepo.DeleteAsync(toDelete);
+        await _projectTeamRepo.DeleteAsync(new ProjectTeam
+        {
+            ProjectId = projectId,
+            MemberId = userId
+        });
         return NoContent();
     }
 }

@@ -19,6 +19,12 @@ public class AssignmentUserRepository : IAssignmentUserRepository
         return assignmentUser;
     }
 
+    public async Task DeleteAsync(AssignmentUser assignmentUser)
+    {
+        _context.AssignmentUsers.Remove(assignmentUser);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<List<AssignmentUser>> GetAllAsync(Guid assignmentId)
     {
         var assignmentusers = _context.AssignmentUsers
