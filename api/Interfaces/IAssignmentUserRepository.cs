@@ -7,7 +7,7 @@ using api.Models;
 namespace api.Interfaces;
 public interface IAssignmentUserRepository
 {
-    Task<List<AssignmentUser>> GetAllAsync();
+    Task<List<AssignmentUser>> GetAllAsync(Guid assignmentId);
     Task<AssignmentUser> CreateAsync(AssignmentUser assignmentUser);
     Task<bool> IsMemeberAssignedTo(Guid assignmentId, string userId);
 }

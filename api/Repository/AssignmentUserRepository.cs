@@ -19,11 +19,12 @@ public class AssignmentUserRepository : IAssignmentUserRepository
         return assignmentUser;
     }
 
-    public async Task<List<AssignmentUser>> GetAllAsync()
+    public async Task<List<AssignmentUser>> GetAllAsync(Guid assignmentId)
     {
         var assignmentusers = _context.AssignmentUsers
             .Include(a => a.Assignment)
             .Include(u => u.User)
+            .Where(a => a.AssignmentId == assignmentId)
             .AsQueryable();
         return await assignmentusers.ToListAsync();
     }

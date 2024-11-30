@@ -26,4 +26,14 @@ public static class UserMapper
       LastName = projectTeam.Member.LastName,
     };
   }
+  public static UserDto ToUserDto(this AssignmentUser assignmentUser)
+  {
+    return new UserDto
+    {
+      Id = assignmentUser.UserId,
+      Username = assignmentUser.User.UserName,
+      FirstName = assignmentUser.User.FirstName,
+      LastName = assignmentUser.User.LastName,
+    };
+  }
 }

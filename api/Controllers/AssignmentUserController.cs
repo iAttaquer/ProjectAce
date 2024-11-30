@@ -1,5 +1,6 @@
 using api.Filters;
 using api.Interfaces;
+using api.Mappers;
 using api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -58,5 +59,26 @@ public class AssignmentUsersController : ControllerBase
     });
 
     return StatusCode(StatusCodes.Status201Created);
+  }
+
+  [HttpGet("{assignmentId:guid}")]
+  [Authorize]
+  [AuthorizeUser]
+  public async Task<IActionResult> GetAssignmentUsers([FromRoute] Guid assignmentId)
+  {
+    if (!ModelState.IsValid) {
+      return BadRequest(ModelState);
+    }
+    var assignment = await _assignmentRepo.GetByIdAsync(assignmentId);
+    if (assignment is null) {
+      return NotFound("Assignment not found");
+    }
+    var user = (AppUser)HttpContext.Items["User"];
+    if (!await _projectTeamRepo.IsMemberInProject(assignment.ProjectId, user.Id)) {
+      return Forbid("You are not a member of project");
+    }
+    var users = await _assignmentUserRepo.GetAllAsync(assignmentId);
+    var userDto = users.Select(u => u.ToUserDto());
+    return Ok(userDto);
   }
 }

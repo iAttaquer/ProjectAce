@@ -82,16 +82,20 @@ public class ProjectTeamController : ControllerBase
         if (!ModelState.IsValid) {
             return BadRequest(ModelState);
         }
+
         // warunek do usuniecia
         if (!await _projectRepo.ExistsAsync(projectId)) {
             return NotFound("Project not found");
         }
+
         var user = (AppUser)HttpContext.Items["User"];
         if (!await _projectTeamRepo.IsMemberInProject(projectId, user.Id)) {
             return Forbid("You are not a member of project");
         }
+
         var members = await _projectTeamRepo.GetAllAsync();
         var userDto = members.Select(u => u.ToUserDto());
+
         return Ok(userDto);
     }
 
@@ -104,7 +108,7 @@ public class ProjectTeamController : ControllerBase
     [HttpDelete("{projectId:guid}/member/{userId}")]
     [Authorize]
     [AuthorizeUser]
-    public async Task<IActionResult> DeleteMember(
+    public async Task<IActionResult> RemoveMember(
         [FromRoute] Guid projectId,
         [FromRoute] string userId
         )
