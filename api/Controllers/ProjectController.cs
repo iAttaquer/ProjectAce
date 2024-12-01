@@ -46,9 +46,12 @@ public class ProjectController : ControllerBase
     {
         var user = (AppUser)HttpContext.Items["User"];
         var projectModel = projectDto.ToProjectFromDto();
+
         projectModel.CreatedById = user.Id;
+
         await _projectRepo.CreateAsync(projectModel);
         await _projectTeamRepo.CreateAsync(new ProjectTeam { ProjectId = projectModel.Id, MemberId = user.Id });
+
         return CreatedAtAction(nameof(GetById), new { id = projectModel.Id }, projectModel.ToProjectDto());
     }
 
@@ -60,8 +63,7 @@ public class ProjectController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetAll()
     {
-        if (!ModelState.IsValid)
-        {
+        if (!ModelState.IsValid) {
             return BadRequest(ModelState);
         }
 
@@ -81,14 +83,12 @@ public class ProjectController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetById([FromRoute] Guid id)
     {
-        if (!ModelState.IsValid)
-        {
+        if (!ModelState.IsValid) {
             return BadRequest(ModelState);
         }
-        var project = await _projectRepo.GetByIdAsync(id);
 
-        if (project is null)
-        {
+        var project = await _projectRepo.GetByIdAsync(id);
+        if (project is null) {
             return NotFound("Project not found");
         }
 
@@ -96,7 +96,7 @@ public class ProjectController : ControllerBase
     }
 
     /// <summary>
-    /// Get all projects created by user
+    /// Get all projects in which user is a member
     /// </summary>
     /// <returns></returns>
     [HttpGet("my-projects")]
@@ -106,7 +106,7 @@ public class ProjectController : ControllerBase
     {
         var user = (AppUser)HttpContext.Items["User"];
 
-        var projects = await _projectRepo.GetAllByUserIdAsync(user.Id);
+        var projects = await _projectRepo.GetAllByMemberAsync(user.Id);
 
         var projectsDto = projects.Select(p => p.ToProjectDto());
 
@@ -114,7 +114,7 @@ public class ProjectController : ControllerBase
     }
 
     /// <summary>
-    /// Update a project. Only for creator of project
+    /// Update a project. For a member of a project
     /// </summary>
     /// <param name="id"></param>
     /// <param name="updateDto"></param>
@@ -124,18 +124,18 @@ public class ProjectController : ControllerBase
     [AuthorizeUser]
     public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] CreateProjectDto updateDto)
     {
-        if (!ModelState.IsValid)
-        {
+        if (!ModelState.IsValid) {
             return BadRequest(ModelState);
         }
+
         var existingProject = await _projectRepo.GetByIdAsync(id);
-        if (existingProject is null)
-        {
+        if (existingProject is null) {
             return NotFound("Project not found");
         }
+
         var user = (AppUser)HttpContext.Items["User"];
         if (!await _projectTeamRepo.IsMemberInProject(existingProject.Id, user.Id)) {
-            return BadRequest("You are not in a project");
+            return BadRequest("You are not a member of a project");
         }
         existingProject.Name = updateDto.Name;
         existingProject.Description = updateDto.Description;
@@ -167,11 +167,10 @@ public class ProjectController : ControllerBase
 
         var user = (AppUser)HttpContext.Items["User"];
         if (toDeleteProject.CreatedById != user.Id) {
-            return Forbid("You are not creator of a project");
+            return BadRequest("You are not creator of a project");
         }
 
         await _projectRepo.DeleteAsync(toDeleteProject);
-
         return NoContent();
     }
 }
