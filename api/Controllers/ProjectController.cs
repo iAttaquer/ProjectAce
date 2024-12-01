@@ -22,6 +22,9 @@ public class ProjectController : ControllerBase
 {
     private readonly IProjectRepository _projectRepo;
     private readonly IProjectTeamRepository _projectTeamRepo;
+    private readonly IAssignmentRepository _assignmentRepo;
+    private readonly IAssignmentUserRepository _assignmentUserRepo;
+
     public ProjectController(IProjectRepository projectRepo,
         IProjectTeamRepository projectTeamRepo)
     {
@@ -131,9 +134,8 @@ public class ProjectController : ControllerBase
             return NotFound("Project not found");
         }
         var user = (AppUser)HttpContext.Items["User"];
-        if (existingProject.CreatedById != user.Id)
-        {
-            return Forbid();
+        if (!await _projectTeamRepo.IsMemberInProject(existingProject.Id, user.Id)) {
+            return BadRequest("You are not in a project");
         }
         existingProject.Name = updateDto.Name;
         existingProject.Description = updateDto.Description;
@@ -154,22 +156,22 @@ public class ProjectController : ControllerBase
     [AuthorizeUser]
     public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
-        if (!ModelState.IsValid)
-        {
+        if (!ModelState.IsValid) {
             return BadRequest(ModelState);
         }
+
         var toDeleteProject = await _projectRepo.GetByIdAsync(id);
-        if (toDeleteProject is null)
-        {
+        if (toDeleteProject is null) {
             return NotFound("Project does not exist");
         }
+
         var user = (AppUser)HttpContext.Items["User"];
-        if (toDeleteProject.CreatedById != user.Id)
-        {
-            return Forbid();
+        if (toDeleteProject.CreatedById != user.Id) {
+            return Forbid("You are not creator of a project");
         }
+
         await _projectRepo.DeleteAsync(toDeleteProject);
-        await _projectTeamRepo.DeleteAllInProject(id);
+
         return NoContent();
     }
 }

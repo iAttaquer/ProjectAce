@@ -41,7 +41,8 @@ public class ApplicationDBContext : IdentityDbContext<AppUser>
         builder.Entity<Assignment>()
             .HasOne(a => a.Project)
             .WithMany(p => p.Assignments)
-            .HasForeignKey(a => a.ProjectId);
+            .HasForeignKey(a => a.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.Entity<ProjectTeam>()
             .HasKey(t => new { t.ProjectId, t.MemberId });

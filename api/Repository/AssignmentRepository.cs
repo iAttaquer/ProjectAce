@@ -23,6 +23,14 @@ public class AssignmentRepository : IAssignmentRepository
         return assignment;
     }
 
+    public async Task DeleteAllInProjectAsync(Guid projectId)
+    {
+        _context.Assignments.RemoveRange(
+            _context.Assignments.Where(a => a.ProjectId == projectId)
+        );
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<Assignment?> DeleteAsync(Assignment assignment)
     {
         _context.Assignments.Remove(assignment);

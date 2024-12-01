@@ -111,14 +111,12 @@ public class AssignmentController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetByProjectId([FromRoute] Guid projectId)
     {
-        if (!ModelState.IsValid)
-        {
+        if (!ModelState.IsValid) {
             return BadRequest(ModelState);
         }
-        var project = await _projectRepo.GetByIdAsync(projectId);
 
-        if (project is null)
-        {
+        var project = await _projectRepo.GetByIdAsync(projectId);
+        if (project is null) {
             return NotFound("Project not found");
         }
 
@@ -172,21 +170,24 @@ public class AssignmentController : ControllerBase
     [AuthorizeUser]
     public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
-        if (!ModelState.IsValid)
-        {
+        if (!ModelState.IsValid) {
             return BadRequest(ModelState);
         }
+
         var toDeleteAssignment = await _assignmentRepo.GetByIdAsync(id);
         if (toDeleteAssignment is null)
         {
             return NotFound("Assignment does not exist");
         }
+
         var user = (AppUser)HttpContext.Items["User"];
         if (toDeleteAssignment.CreatedById != user.Id)
         {
             return Forbid();
         }
+
         await _assignmentRepo.DeleteAsync(toDeleteAssignment);
+
         return NoContent();
     }
 }
