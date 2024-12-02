@@ -13,4 +13,5 @@ public interface IProjectTeamRepository
     Task DeleteAsync(ProjectTeam projectTeam);
     Task<bool> IsMemberInProject(Guid projectId, string memberId);
     Task DeleteAllInProject(Guid projectId);
+    Task<List<ProjectTeam>> GetAllByMemberAsync(string userId);
 }

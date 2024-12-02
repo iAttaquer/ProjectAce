@@ -58,6 +58,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
     options.Password.RequiredLength = 5;
 })
 .AddEntityFrameworkStores<ApplicationDBContext>();
@@ -90,6 +91,7 @@ builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IAssignmentRepository, AssignmentRepository>();
 builder.Services.AddScoped<IProjectTeamRepository, ProjectTeamRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAssignmentUserRepository, AssignmentUserRepository>();
 
 var app = builder.Build();
 

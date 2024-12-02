@@ -28,16 +28,24 @@ public class ProjectTeamRepository : IProjectTeamRepository
     await _context.SaveChangesAsync();
   }
 
-    public async Task DeleteAsync(ProjectTeam projectTeam)
-    {
-      _context.ProjectTeams.Remove(projectTeam);
-      await _context.SaveChangesAsync();
-    }
+  public async Task DeleteAsync(ProjectTeam projectTeam)
+  {
+    _context.ProjectTeams.Remove(projectTeam);
+    await _context.SaveChangesAsync();
+  }
 
-    public async Task<List<ProjectTeam>> GetAllAsync()
+  public async Task<List<ProjectTeam>> GetAllAsync()
   {
     var ProjectTeams = _context.ProjectTeams.Include(p => p.Project).Include(u => u.Member).AsQueryable();
     return await ProjectTeams.ToListAsync();
+  }
+
+  public async Task<List<ProjectTeam>> GetAllByMemberAsync(string userId)
+  {
+    return await _context.ProjectTeams
+       .Include(x => x.Member)
+       .Where(x => x.MemberId == userId)
+       .ToListAsync();
   }
 
   public async Task<bool> IsMemberInProject(Guid projectId, string memberId)

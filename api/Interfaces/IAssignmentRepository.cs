@@ -15,4 +15,5 @@ public interface IAssignmentRepository
     Task<Assignment> CreateAsync(Assignment assignment);
     Task<Assignment?> UpdateAsync(Assignment assignment);
     Task<Assignment?> DeleteAsync(Assignment assignment);
+    Task DeleteAllInProjectAsync(Guid projectId);
 }

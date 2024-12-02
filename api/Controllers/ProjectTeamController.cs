@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api.Dtos.User;
 using api.Filters;
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 namespace api.Controllers;
 
 [Route("api/project-teams")]
@@ -35,9 +35,13 @@ public class ProjectTeamController : ControllerBase
     /// <param name="projectId"></param>
     /// <param name="userId"></param>
     /// <returns></returns>
-    [HttpPost("{projectId}/member/{userId}")]
+    [HttpPost("{projectId}/{userId}")]
     [Authorize]
     [AuthorizeUser]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> AddMember(
         [FromRoute] Guid projectId,
         [FromRoute] string userId
@@ -52,7 +56,7 @@ public class ProjectTeamController : ControllerBase
         }
         var user = (AppUser)HttpContext.Items["User"];
         if (project.CreatedById != user.Id) {
-            return Forbid("You are not a creator of project");
+            return Forbid();
         }
         var upcomingMember = await _userRepo.GetByIdAsync(userId);
         if (upcomingMember is null) {
@@ -78,21 +82,29 @@ public class ProjectTeamController : ControllerBase
     [HttpGet("{projectId:guid}")]
     [Authorize]
     [AuthorizeUser]
+    [ProducesResponseType(typeof(List<UserDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAllMembersInProject([FromRoute] Guid projectId)
     {
         if (!ModelState.IsValid) {
             return BadRequest(ModelState);
         }
+
         // warunek do usuniecia
         if (!await _projectRepo.ExistsAsync(projectId)) {
             return NotFound("Project not found");
         }
+
         var user = (AppUser)HttpContext.Items["User"];
         if (!await _projectTeamRepo.IsMemberInProject(projectId, user.Id)) {
-            return Forbid("You are not a member of project");
+            return Forbid();
         }
+
         var members = await _projectTeamRepo.GetAllAsync();
         var userDto = members.Select(u => u.ToUserDto());
+
         return Ok(userDto);
     }
 
@@ -102,10 +114,14 @@ public class ProjectTeamController : ControllerBase
     /// <param name="projectId"></param>
     /// <param name="userId"></param>
     /// <returns></returns>
-    [HttpDelete("{projectId:guid}/member/{userId}")]
+    [HttpDelete("{projectId:guid}/{userId}")]
     [Authorize]
     [AuthorizeUser]
-    public async Task<IActionResult> DeleteMember(
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RemoveMember(
         [FromRoute] Guid projectId,
         [FromRoute] string userId
         )
@@ -119,7 +135,7 @@ public class ProjectTeamController : ControllerBase
         }
         var user = (AppUser)HttpContext.Items["User"];
         if (project.CreatedById != user.Id) {
-            return Forbid("You are not a creator of project");
+            return Forbid();
         }
         if (user.Id == userId) {
             return BadRequest("You can't remove yourself from project");
@@ -127,8 +143,11 @@ public class ProjectTeamController : ControllerBase
         if (!await _projectTeamRepo.IsMemberInProject(projectId, userId)) {
             return NotFound("Member is not in project");
         }
-        var toDelete = new ProjectTeam { ProjectId = projectId, MemberId = userId };
-        await _projectTeamRepo.DeleteAsync(toDelete);
+        await _projectTeamRepo.DeleteAsync(new ProjectTeam
+        {
+            ProjectId = projectId,
+            MemberId = userId
+        });
         return NoContent();
     }
 }

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using api.Dtos.Project;
 using api.Models;
 
@@ -28,6 +24,18 @@ public static class ProjectMapper
             Name = projectDto.Name,
             Description = projectDto.Description,
             Status = projectDto.Status,
+        };
+    }
+    public static ProjectDto ToProjectDto(this ProjectTeam projectTeam)
+    {
+        return new ProjectDto
+        {
+            Id = projectTeam.ProjectId,
+            Name = projectTeam.Project.Name,
+            Description = projectTeam.Project.Description,
+            Status = projectTeam.Project.Status,
+            CreatedAt = projectTeam.Project.CreatedAt,
+            CreatedBy = projectTeam.Project.CreatedBy.UserName,
         };
     }
 }

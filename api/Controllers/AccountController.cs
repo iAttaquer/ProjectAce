@@ -38,12 +38,12 @@ public class AccountController : ControllerBase
     [HttpPost("register")]
     [ProducesResponseType(typeof(NewUserDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
     {
         try
         {
-            if (!ModelState.IsValid)
-            {
+            if (!ModelState.IsValid) {
                 return BadRequest(ModelState);
             }
             var appUser = new AppUser
@@ -56,11 +56,9 @@ public class AccountController : ControllerBase
 
             var createdUser = await _userManager.CreateAsync(appUser, registerDto.Password);
 
-            if (createdUser.Succeeded)
-            {
+            if (createdUser.Succeeded) {
                 var roleResult = await _userManager.AddToRoleAsync(appUser, "User");
-                if (roleResult.Succeeded)
-                {
+                if (roleResult.Succeeded) {
                     return Ok(
                         new NewUserDto
                         {
@@ -74,7 +72,6 @@ public class AccountController : ControllerBase
                 {
                     return StatusCode(500, roleResult.Errors);
                 }
-
             }
             else
             {
@@ -98,20 +95,17 @@ public class AccountController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
     {
-        if (!ModelState.IsValid)
-        {
+        if (!ModelState.IsValid) {
             return BadRequest(ModelState);
         }
         var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName.ToLower() == loginDto.Username.ToLower());
 
-        if (user is null)
-        {
+        if (user is null) {
             return Unauthorized("Invalid username!");
         }
         var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
 
-        if (!result.Succeeded)
-        {
+        if (!result.Succeeded) {
             return Unauthorized("Username not found or password incorrect");
         }
 
@@ -131,16 +125,17 @@ public class AccountController : ControllerBase
     /// <returns></returns>
     [HttpGet("me")]
     [Authorize]
+    [ProducesResponseType(typeof(GetMeDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetMe()
     {
         var username = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrEmpty(username))
-        {
+        if (string.IsNullOrEmpty(username)) {
             return Unauthorized("User not authenticated");
         }
+
         var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName.ToLower() == username.ToLower());
-        if (user is null)
-        {
+        if (user is null) {
             return Unauthorized("Invalid username!");
         }
         return Ok(
@@ -162,36 +157,36 @@ public class AccountController : ControllerBase
     /// <returns></returns>
     [HttpPut("change-password")]
     [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changePasswordDto)
     {
-        if (!ModelState.IsValid)
-        {
+        if (!ModelState.IsValid) {
             return BadRequest(ModelState);
         }
 
         var username = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (string.IsNullOrEmpty(username))
-        {
+        if (string.IsNullOrEmpty(username)) {
             return Unauthorized("User not authenticated");
         }
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName.ToLower() == username.ToLower());
 
-        if (user is null)
-        {
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName.ToLower() == username.ToLower());
+        if (user is null) {
             return Unauthorized("Invalid username!");
         }
-        if (changePasswordDto.CurrentPassword == changePasswordDto.NewPassword)
-        {
+
+        if (changePasswordDto.CurrentPassword == changePasswordDto.NewPassword) {
             return BadRequest("New password cannot be the same as the current password");
         }
+
         var changePasswordResult = await _userManager.ChangePasswordAsync(
             user,
             changePasswordDto.CurrentPassword,
             changePasswordDto.NewPassword
         );
-        if (changePasswordResult.Succeeded)
-        {
+        if (changePasswordResult.Succeeded) {
             return Ok("Password changed successfully");
         }
         else
@@ -206,18 +201,21 @@ public class AccountController : ControllerBase
     /// <returns></returns>
     [HttpPut("update-names")]
     [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdateNames([FromBody] UpdateNamesDto updateNamesDto)
     {
-        if (!ModelState.IsValid)
-        {
+        if (!ModelState.IsValid) {
             return BadRequest(ModelState);
         }
-        var username = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        if (string.IsNullOrEmpty(username))
-        {
+        var username = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(username)) {
             return Unauthorized("User not authenticated");
         }
+
         var user = await _userManager.FindByNameAsync(username);
 
         user.FirstName = updateNamesDto.FirstName;
