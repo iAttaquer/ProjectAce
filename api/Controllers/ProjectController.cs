@@ -22,8 +22,6 @@ public class ProjectController : ControllerBase
 {
     private readonly IProjectRepository _projectRepo;
     private readonly IProjectTeamRepository _projectTeamRepo;
-    private readonly IAssignmentRepository _assignmentRepo;
-    private readonly IAssignmentUserRepository _assignmentUserRepo;
 
     public ProjectController(IProjectRepository projectRepo,
         IProjectTeamRepository projectTeamRepo)
@@ -135,7 +133,7 @@ public class ProjectController : ControllerBase
 
         var user = (AppUser)HttpContext.Items["User"];
         if (!await _projectTeamRepo.IsMemberInProject(existingProject.Id, user.Id)) {
-            return BadRequest("You are not a member of a project");
+            return Forbid();
         }
         existingProject.Name = updateDto.Name;
         existingProject.Description = updateDto.Description;
@@ -167,7 +165,7 @@ public class ProjectController : ControllerBase
 
         var user = (AppUser)HttpContext.Items["User"];
         if (toDeleteProject.CreatedById != user.Id) {
-            return BadRequest("You are not creator of a project");
+            return Forbid();
         }
 
         await _projectRepo.DeleteAsync(toDeleteProject);

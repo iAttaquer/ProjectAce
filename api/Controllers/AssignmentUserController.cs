@@ -53,7 +53,7 @@ public class AssignmentUsersController : ControllerBase
     }
     var user = (AppUser)HttpContext.Items["User"];
     if (!await _projectTeamRepo.IsMemberInProject(assignment.ProjectId, user.Id)) {
-      return Forbid("You are not a member of project");
+      return Forbid();
     }
     if (await _assignmentUserRepo.IsMemeberAssignedTo(assignmentId, memberId)) {
       return BadRequest("User is already assigned to assignment");
@@ -86,7 +86,7 @@ public class AssignmentUsersController : ControllerBase
     }
     var user = (AppUser)HttpContext.Items["User"];
     if (!await _projectTeamRepo.IsMemberInProject(assignment.ProjectId, user.Id)) {
-      return Forbid("You are not a member of project");
+      return Forbid();
     }
     var users = await _assignmentUserRepo.GetAllAsync(assignmentId);
     var userDto = users.Select(u => u.ToUserDto());
@@ -117,7 +117,7 @@ public class AssignmentUsersController : ControllerBase
     }
     var user = (AppUser)HttpContext.Items["User"];
     if (!await _projectTeamRepo.IsMemberInProject(assignment.ProjectId, user.Id)) {
-      return Forbid("You are not a member of project");
+      return Forbid();
     }
     if (!await _assignmentUserRepo.IsMemeberAssignedTo(assignmentId, memberId)) {
       return NotFound("User is not assigned to assignment");

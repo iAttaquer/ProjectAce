@@ -51,7 +51,7 @@ public class ProjectTeamController : ControllerBase
         }
         var user = (AppUser)HttpContext.Items["User"];
         if (project.CreatedById != user.Id) {
-            return Forbid("You are not a creator of project");
+            return Forbid();
         }
         var upcomingMember = await _userRepo.GetByIdAsync(userId);
         if (upcomingMember is null) {
@@ -90,7 +90,7 @@ public class ProjectTeamController : ControllerBase
 
         var user = (AppUser)HttpContext.Items["User"];
         if (!await _projectTeamRepo.IsMemberInProject(projectId, user.Id)) {
-            return Forbid("You are not a member of project");
+            return Forbid();
         }
 
         var members = await _projectTeamRepo.GetAllAsync();
@@ -122,7 +122,7 @@ public class ProjectTeamController : ControllerBase
         }
         var user = (AppUser)HttpContext.Items["User"];
         if (project.CreatedById != user.Id) {
-            return Forbid("You are not a creator of project");
+            return Forbid();
         }
         if (user.Id == userId) {
             return BadRequest("You can't remove yourself from project");
