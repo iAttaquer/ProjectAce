@@ -1,3 +1,4 @@
+using api.Dtos.User;
 using api.Filters;
 using api.Interfaces;
 using api.Mappers;
@@ -38,6 +39,10 @@ public class AssignmentUsersController : ControllerBase
   [HttpPost("{assignmentId:guid}/{memberId}")]
   [Authorize]
   [AuthorizeUser]
+  [ProducesResponseType(StatusCodes.Status201Created)]
+  [ProducesResponseType(StatusCodes.Status400BadRequest)]
+  [ProducesResponseType(StatusCodes.Status404NotFound)]
+  [ProducesResponseType(StatusCodes.Status403Forbidden)]
   public async Task<IActionResult> AddMemberToAssignment([FromRoute] Guid assignmentId, [FromRoute] string memberId)
   {
     if (!ModelState.IsValid) {
@@ -75,6 +80,10 @@ public class AssignmentUsersController : ControllerBase
   [HttpGet("{assignmentId:guid}")]
   [Authorize]
   [AuthorizeUser]
+  [ProducesResponseType(typeof(UserDto),StatusCodes.Status200OK)]
+  [ProducesResponseType(StatusCodes.Status400BadRequest)]
+  [ProducesResponseType(StatusCodes.Status403Forbidden)]
+  [ProducesResponseType(StatusCodes.Status404NotFound)]
   public async Task<IActionResult> GetAssignmentUsers([FromRoute] Guid assignmentId)
   {
     if (!ModelState.IsValid) {
@@ -102,6 +111,10 @@ public class AssignmentUsersController : ControllerBase
   [HttpDelete("{assignmentId:guid}/{memberId}")]
   [Authorize]
   [AuthorizeUser]
+  [ProducesResponseType(StatusCodes.Status204NoContent)]
+  [ProducesResponseType(StatusCodes.Status400BadRequest)]
+  [ProducesResponseType(StatusCodes.Status403Forbidden)]
+  [ProducesResponseType(StatusCodes.Status404NotFound)]
   public async Task<IActionResult> RemoveMemberFromAssignment([FromRoute] Guid assignmentId, [FromRoute] string memberId)
   {
     if (!ModelState.IsValid) {
@@ -127,6 +140,6 @@ public class AssignmentUsersController : ControllerBase
       AssignmentId = assignmentId,
       UserId = memberId,
     });
-    return Ok();
+    return NoContent();
   }
 }
