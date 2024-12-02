@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api.Dtos.User;
 using api.Filters;
 using api.Interfaces;
 using api.Mappers;
@@ -34,9 +35,13 @@ public class ProjectTeamController : ControllerBase
     /// <param name="projectId"></param>
     /// <param name="userId"></param>
     /// <returns></returns>
-    [HttpPost("{projectId}/member/{userId}")]
+    [HttpPost("{projectId}/{userId}")]
     [Authorize]
     [AuthorizeUser]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> AddMember(
         [FromRoute] Guid projectId,
         [FromRoute] string userId
@@ -77,6 +82,10 @@ public class ProjectTeamController : ControllerBase
     [HttpGet("{projectId:guid}")]
     [Authorize]
     [AuthorizeUser]
+    [ProducesResponseType(typeof(List<UserDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAllMembersInProject([FromRoute] Guid projectId)
     {
         if (!ModelState.IsValid) {
@@ -105,9 +114,13 @@ public class ProjectTeamController : ControllerBase
     /// <param name="projectId"></param>
     /// <param name="userId"></param>
     /// <returns></returns>
-    [HttpDelete("{projectId:guid}/member/{userId}")]
+    [HttpDelete("{projectId:guid}/{userId}")]
     [Authorize]
     [AuthorizeUser]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> RemoveMember(
         [FromRoute] Guid projectId,
         [FromRoute] string userId
