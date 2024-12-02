@@ -26,4 +26,16 @@ public static class ProjectMapper
             Status = projectDto.Status,
         };
     }
+    public static ProjectDto ToProjectDto(this ProjectTeam projectTeam)
+    {
+        return new ProjectDto
+        {
+            Id = projectTeam.ProjectId,
+            Name = projectTeam.Project.Name,
+            Description = projectTeam.Project.Description,
+            Status = projectTeam.Project.Status,
+            CreatedAt = projectTeam.Project.CreatedAt,
+            CreatedBy = projectTeam.Project.CreatedBy.UserName,
+        };
+    }
 }

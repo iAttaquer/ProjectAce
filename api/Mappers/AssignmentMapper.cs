@@ -31,4 +31,17 @@ public static class AssignmentMapper
             Status = assignmentDto.Status,
         };
     }
+    public static AssignmentDto ToAssignmentDto(this AssignmentUser assignmentUser)
+    {
+        return new AssignmentDto
+        {
+            Id = assignmentUser.AssignmentId,
+            Name = assignmentUser.Assignment.Name,
+            Description = assignmentUser.Assignment.Description,
+            Status = assignmentUser.Assignment.Status,
+            CreatedAt = assignmentUser.Assignment.CreatedAt,
+            CreatedBy = assignmentUser.Assignment.CreatedBy.UserName,
+            ProjectId = assignmentUser.Assignment.ProjectId,
+        };
+    }
 }

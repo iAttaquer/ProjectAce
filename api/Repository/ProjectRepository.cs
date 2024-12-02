@@ -42,15 +42,6 @@ public class ProjectRepository : IProjectRepository
         return await projects.ToListAsync();
     }
 
-    public async Task<List<Project>> GetAllByMemberAsync(string userId)
-    {
-        return await _context.Projects
-            .Include(x => x.CreatedBy)
-            .Include(x => x.ProjectTeams)
-            .Where(x => x.ProjectTeams.Any(m => m.MemberId == userId))
-            .ToListAsync();
-    }
-
     public async Task<List<Project>> GetAllByUserIdAsync(string userId)
     {
         var projects = _context.Projects.Include(p => p.CreatedBy)

@@ -19,14 +19,17 @@ public class AssignmentController : ControllerBase
     private readonly IAssignmentRepository _assignmentRepo;
     private readonly IProjectRepository _projectRepo;
     private readonly IProjectTeamRepository _projectTeamRepo;
+    private readonly IAssignmentUserRepository _assignmentUserRepo;
     public AssignmentController(IAssignmentRepository assignmentRepo,
         IProjectRepository projectRepo,
-        IProjectTeamRepository projectTeamRepo
+        IProjectTeamRepository projectTeamRepo,
+        IAssignmentUserRepository assignmentUserRepo
         )
     {
         _assignmentRepo = assignmentRepo;
         _projectRepo = projectRepo;
         _projectTeamRepo = projectTeamRepo;
+        _assignmentUserRepo = assignmentUserRepo;
     }
 
     /// <summary>
@@ -97,7 +100,7 @@ public class AssignmentController : ControllerBase
     }
 
     /// <summary>
-    /// Get all assignments created by user
+    /// Get all assignments assigned to user
     /// </summary>
     /// <returns></returns>
     [HttpGet("my-assignments")]
@@ -108,9 +111,9 @@ public class AssignmentController : ControllerBase
     {
         var user = (AppUser)HttpContext.Items["User"];
 
-        var assignments = await _assignmentRepo.GetAllByUserIdAsync(user.Id);
+        var assignmentUsers = await _assignmentUserRepo.GetAllByMemberIdAsync(user.Id);
 
-        var assignmentDto = assignments.Select(a => a.ToAssignmentDto());
+        var assignmentDto = assignmentUsers.Select(a => a.ToAssignmentDto());
 
         return Ok(assignmentDto);
     }
@@ -120,7 +123,7 @@ public class AssignmentController : ControllerBase
     /// </summary>
     /// <param name="projectId"></param>
     /// <returns></returns>
-    [HttpGet("by-project/{projectId:guid}")]
+    [HttpGet("{projectId:guid}")]
     [Authorize]
     [ProducesResponseType(typeof(List<AssignmentDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

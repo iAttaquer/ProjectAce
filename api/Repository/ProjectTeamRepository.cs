@@ -40,6 +40,14 @@ public class ProjectTeamRepository : IProjectTeamRepository
     return await ProjectTeams.ToListAsync();
   }
 
+  public async Task<List<ProjectTeam>> GetAllByMemberAsync(string userId)
+  {
+    return await _context.ProjectTeams
+       .Include(x => x.Member)
+       .Where(x => x.MemberId == userId)
+       .ToListAsync();
+  }
+
   public async Task<bool> IsMemberInProject(Guid projectId, string memberId)
   {
     return await _context.ProjectTeams.AnyAsync(t =>

@@ -117,9 +117,9 @@ public class ProjectController : ControllerBase
         }
         var user = (AppUser)HttpContext.Items["User"];
 
-        var projects = await _projectRepo.GetAllByMemberAsync(user.Id);
+        var projectTeams = await _projectTeamRepo.GetAllByMemberAsync(user.Id);
 
-        var projectsDto = projects.Select(p => p.ToProjectDto());
+        var projectsDto = projectTeams.Select(p => p.ToProjectDto());
 
         return Ok(projectsDto);
     }

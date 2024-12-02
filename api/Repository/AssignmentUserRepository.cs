@@ -35,6 +35,14 @@ public class AssignmentUserRepository : IAssignmentUserRepository
         return await assignmentusers.ToListAsync();
     }
 
+    public async Task<List<AssignmentUser>> GetAllByMemberIdAsync(string userId)
+    {
+        return await _context.AssignmentUsers
+            .Include(a => a.Assignment)
+            .Include(u => u.User)
+            .Where(a => a.UserId == userId)
+            .ToListAsync();
+    }
     public async Task<bool> IsMemeberAssignedTo(Guid assignmentId, string userId)
     {
         return await _context.AssignmentUsers.AnyAsync(
