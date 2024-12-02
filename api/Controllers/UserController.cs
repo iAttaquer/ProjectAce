@@ -1,3 +1,4 @@
+using api.Dtos.User;
 using api.Interfaces;
 using api.Mappers;
 using Microsoft.AspNetCore.Authorization;
@@ -21,6 +22,7 @@ public class UserController : ControllerBase
   /// <returns></returns>
   [HttpGet]
   [Authorize]
+  [ProducesResponseType(typeof(List<UserDto>), StatusCodes.Status200OK)]
   public async Task<IActionResult> GetUsers()
   {
     var users = await _userRepository.GetAllAsync();
@@ -37,6 +39,7 @@ public class UserController : ControllerBase
   /// <returns></returns>
   [HttpGet("{id:alpha}")]
   [Authorize]
+  [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
   public async Task<IActionResult> GetUserById([FromRoute] string id)
   {
     var user = await _userRepository.GetByIdAsync(id);
