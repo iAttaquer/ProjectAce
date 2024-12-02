@@ -42,6 +42,9 @@ public class ProjectController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreateProjectDto projectDto)
     {
+        if (!ModelState.IsValid){
+            return BadRequest();
+        }
         var user = (AppUser)HttpContext.Items["User"];
         var projectModel = projectDto.ToProjectFromDto();
 
@@ -59,6 +62,8 @@ public class ProjectController : ControllerBase
     /// <returns></returns>
     [HttpGet]
     [Authorize]
+    [ProducesResponseType(typeof(ProjectDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAll()
     {
         if (!ModelState.IsValid) {
@@ -79,6 +84,9 @@ public class ProjectController : ControllerBase
     /// <returns></returns>
     [HttpGet("{id:guid}")]
     [Authorize]
+    [ProducesResponseType(typeof(ProjectDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById([FromRoute] Guid id)
     {
         if (!ModelState.IsValid) {
@@ -100,8 +108,13 @@ public class ProjectController : ControllerBase
     [HttpGet("my-projects")]
     [Authorize]
     [AuthorizeUser]
+    [ProducesResponseType(typeof(ProjectDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetMyProjects()
     {
+        if (!ModelState.IsValid) {
+            return BadRequest();
+        }
         var user = (AppUser)HttpContext.Items["User"];
 
         var projects = await _projectRepo.GetAllByMemberAsync(user.Id);
@@ -120,6 +133,10 @@ public class ProjectController : ControllerBase
     [HttpPut("{id:guid}")]
     [Authorize]
     [AuthorizeUser]
+    [ProducesResponseType(typeof(ProjectDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] CreateProjectDto updateDto)
     {
         if (!ModelState.IsValid) {
@@ -152,6 +169,10 @@ public class ProjectController : ControllerBase
     [HttpDelete("{id:guid}")]
     [Authorize]
     [AuthorizeUser]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
         if (!ModelState.IsValid) {
