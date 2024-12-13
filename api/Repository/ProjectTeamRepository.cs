@@ -44,6 +44,7 @@ public class ProjectTeamRepository : IProjectTeamRepository
   {
     return await _context.ProjectTeams
        .Include(x => x.Member)
+       .Include(x => x.Project)
        .Where(x => x.MemberId == userId)
        .ToListAsync();
   }
