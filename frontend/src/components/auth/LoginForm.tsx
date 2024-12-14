@@ -25,11 +25,7 @@ export function LoginForm({ onLogin }) {
         onLogin(data);
       } else {
         const errorData = await response.json();
-<<<<<<< HEAD
         setError(errorData.detail || 'Błąd logowania');
-=======
-        setError(errorData.derail || 'Błąd logowania');
->>>>>>> 734090f (feat: add frontend init setup)
       }
     } catch (error) {
       console.log(error);
@@ -38,41 +34,29 @@ export function LoginForm({ onLogin }) {
   };
 
   return (
-<<<<<<< HEAD
     <form onSubmit={handleSubmit}
         className="flex flex-col space-y-4 bg-gray-50 px-4 py-8 sm:px-16">
       <label htmlFor="username" className="block text-xs text-gray-600 uppercase">
         Nazwa użytkownika
       </label>
-=======
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="username">Nazwa użytkownika</label>
->>>>>>> 734090f (feat: add frontend init setup)
       <input
         type="text"
         id="username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
         required
-<<<<<<< HEAD
         className="mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-black focus:outline-none focus:ring-black sm:text-sm"
        />
 
        <label htmlFor="password" className="block text-xs text-gray-600 uppercase">
         Hasło:
        </label>
-=======
-       />
-
-       <label htmlFor="password">Hasło:</label>
->>>>>>> 734090f (feat: add frontend init setup)
        <input
          type="password"
          id="password"
          value={password}
          onChange={(e) => setPassword(e.target.value)}
          required
-<<<<<<< HEAD
          className="mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-black focus:outline-none focus:ring-black sm:text-sm"
        />
 
@@ -84,12 +68,6 @@ export function LoginForm({ onLogin }) {
         </Link>
         {' for free.'}
       </p>
-=======
-       />
-
-      <button type="submit">Zaloguj się</button>
-
->>>>>>> 734090f (feat: add frontend init setup)
       {error && <p className="text-red-500">{error}</p>}
     </form>
   )
