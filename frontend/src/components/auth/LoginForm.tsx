@@ -1,4 +1,6 @@
 import { useState } from "react";
+import Link from 'next/link';
+import { SubmitButton } from "./submit-button";
 
 export function LoginForm({ onLogin }) {
   const [username, setUsername] = useState('');
@@ -32,27 +34,40 @@ export function LoginForm({ onLogin }) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="username">Nazwa użytkownika</label>
+    <form onSubmit={handleSubmit}
+        className="flex flex-col space-y-4 bg-gray-50 px-4 py-8 sm:px-16">
+      <label htmlFor="username" className="block text-xs text-gray-600 uppercase">
+        Nazwa użytkownika
+      </label>
       <input
         type="text"
         id="username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
         required
+        className="mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-black focus:outline-none focus:ring-black sm:text-sm"
        />
 
-       <label htmlFor="password">Hasło:</label>
+       <label htmlFor="password" className="block text-xs text-gray-600 uppercase">
+        Hasło:
+       </label>
        <input
          type="password"
          id="password"
          value={password}
          onChange={(e) => setPassword(e.target.value)}
          required
+         className="mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-black focus:outline-none focus:ring-black sm:text-sm"
        />
 
-      <button type="submit">Zaloguj się</button>
-
+      <SubmitButton>Zaloguj się</SubmitButton>
+      <p className="text-center text-sm text-gray-600">
+        {"Don't have an account? "}
+        <Link href="/register" className="font-semibold text-gray-800">
+          Sign up
+        </Link>
+        {' for free.'}
+      </p>
       {error && <p className="text-red-500">{error}</p>}
     </form>
   )
