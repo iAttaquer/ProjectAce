@@ -9,14 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-<<<<<<< HEAD
-<<<<<<< HEAD
     "@flaticon/flaticon-uicons": "^3.3.1",
-=======
->>>>>>> 92d0d8a (feat: add simple home page)
-=======
-    "@flaticon/flaticon-uicons": "^3.3.1",
->>>>>>> 675385b (feat: add register form)
+    "axios": "^1.7.9",
     "next": "15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

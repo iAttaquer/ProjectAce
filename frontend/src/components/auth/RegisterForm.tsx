@@ -1,5 +1,6 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import Link from 'next/link';
+import axios from "axios";
 
 export function RegisterForm({ onRegister }) {
   const [username, setUsername] = useState('');
@@ -7,7 +8,7 @@ export function RegisterForm({ onRegister }) {
   const [lastname, setLastname] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError] = useState<React.ReactNode | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -16,26 +17,32 @@ export function RegisterForm({ onRegister }) {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/account/register', {
-        method: 'Post',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, email, password, firstname, lastname}),
+      const response = await axios.post('/api/account/register', {
+        username, email, password, firstname, lastname
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        onRegister(data);
-      } else {
-        const errorData = await response.json();
-        console.log(errorData);
-        console.log(errorData[0].description);
-        setError(errorData[0].description || 'Błąd rejestracji');
-      }
+      onRegister(response.data);
+
     } catch (error) {
-      console.log(error);
-      setError('Błąd połączenia z serwerem');
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          console.log(error.response.data);
+          if (Array.isArray(error.response.data)) {
+            const errorListItems = error.response.data
+              .filter(err => err.description)
+              .map((err, index) => (<li key={index}>{err.description}</li>));
+              setError(errorListItems);
+          } else {
+            setError(<li>{'Błąd połączenia z serwerem'}</li>);
+          }
+        } else if (error.request) {
+          setError(<li>{'Błąd połączenia z serwerem'}</li>);
+        } else {
+          setError(<li>{'Błąd rejestracji'}</li>);
+        }
+      } else {
+        setError(<li>{'Nieoczekiwany błąd'}</li>);
+      }
     } finally {
       setLoading(false);
     }
@@ -106,9 +113,11 @@ export function RegisterForm({ onRegister }) {
           )}
         </button>
         {error && 
-          <div className="text-red-500 p-2 w-full items-center flex flex-row gap-1">
-            <i className="fi fi-bs-exclamation flex"></i>
+          <div className="text-red-400 p-2 w-full flex flex-row gap-1">
+            <i className="fi fi-bs-exclamation mt-2"></i>
+            <ul className="mt-1.5">
             {error}
+            </ul>
           </div>}
         <div className="text-sm font-medium text-gray-500 dark:text-gray-300">
             Masz już konto?
