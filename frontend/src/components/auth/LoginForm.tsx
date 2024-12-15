@@ -25,7 +25,7 @@ export function LoginForm({ onLogin }) {
         onLogin(data);
       } else {
         const errorData = await response.json();
-        setError(errorData.derail || 'Błąd logowania');
+        setError(errorData.detail || 'Błąd logowania');
       }
     } catch (error) {
       console.log(error);
