@@ -2,7 +2,15 @@ import React, { useState } from "react";
 import Link from 'next/link';
 import axios from "axios";
 
-export function RegisterForm({ onRegister }) {
+interface RegisterUserData {
+  username: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+  password: string;
+}
+
+export const RegisterForm: React.FC<{ onRegister:(data: RegisterUserData) => void }> = ({ onRegister }) => {
   const [username, setUsername] = useState('');
   const [firstname, setFirstname] = useState('');
   const [lastname, setLastname] = useState('');
@@ -11,7 +19,7 @@ export function RegisterForm({ onRegister }) {
   const [error, setError] = useState<React.ReactNode | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -35,8 +43,6 @@ export function RegisterForm({ onRegister }) {
           } else {
             setError(<li>{'Błąd połączenia z serwerem'}</li>);
           }
-        } else if (error.request) {
-          setError(<li>{'Błąd połączenia z serwerem'}</li>);
         } else {
           setError(<li>{'Błąd rejestracji'}</li>);
         }

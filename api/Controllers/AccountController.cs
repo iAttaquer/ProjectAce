@@ -101,7 +101,7 @@ public class AccountController : ControllerBase
         var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName.ToLower() == loginDto.Username.ToLower());
 
         if (user is null) {
-            return Unauthorized("Invalid username!");
+            return Unauthorized("Username not found or password incorrect");
         }
         var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
 
