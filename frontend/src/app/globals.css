@@ -1,0 +1,41 @@
+@import "../../node_modules/@flaticon/flaticon-uicons/css/all/all.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+}
+
+
+.project-title1 {
+  text-shadow: 2px 6px 4px rgba(0,0,0,0.2),
+                 0px -5px 35px rgba(255,255,255,0.3);
+}
+.project-title2 {
+  text-shadow: 2px 8px 6px rgba(0,0,0,0.2),
+                 0px -5px 35px rgba(54, 254, 23, 0.3);
+}
+
+
+.project-title1 {
+  text-shadow: 2px 6px 4px rgba(0,0,0,0.2),
+                 0px -5px 35px rgba(255,255,255,0.3);
+}
+.project-title2 {
+  text-shadow: 2px 8px 6px rgba(0,0,0,0.2),
+                 0px -5px 35px rgba(54, 254, 23, 0.3);
+}
