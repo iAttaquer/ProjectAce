@@ -1,4 +1,5 @@
 "use client";
+import "flowbite";
 import { useUser } from "@/hooks/useUser";
 import { logout } from "@/components/logout";
 import { useRouter } from "next/navigation";
@@ -8,6 +9,7 @@ export default function Navbar() {
   const router = useRouter();
 
   return (
+    <>
     <div className="navbar bg-base-200">
       <div className="flex-1">
         <a className="btn btn-ghost text-xl -space-x-2">
@@ -32,9 +34,8 @@ export default function Navbar() {
             tabIndex={0}
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
             <li>
-              <a className="justify-between">
+              <a className="justify-between" onClick={()=>document.getElementById('profile-modal')?.showModal()}>
                 Profile
-                <span className="badge">New</span>
               </a>
             </li>
             <li><a>Settings</a></li>
@@ -43,5 +44,29 @@ export default function Navbar() {
         </div>
       </div>
     </div>
+    <dialog id="profile-modal" className="modal">
+      <div className="modal-box">
+        <form method="dialog">
+          <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+        <div className="mt-2 flex row gap-5">
+          <div className="rounded-full w-20 h-20 flex border border-gray-400 items-center justify-center">
+            <i className="fi fi-sr-user flex" style={{fontSize: '2em'}}></i>
+          </div>
+          <div>
+            <h3 className="font-bold text-lg">{user?.firstName} {user?.lastName}</h3>
+            <div className="flex row gap-1">
+              <p>Username: </p>
+              <h3 className="font-bold">{user?.username}</h3>
+            </div>
+            <div className="flex row gap-1">
+              <p>Email: </p>
+              <h3 className="font-bold">{user?.email}</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </dialog>
+    </>
   );
 }
