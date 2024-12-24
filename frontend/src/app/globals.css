@@ -39,3 +39,7 @@ body {
   text-shadow: 2px 8px 6px rgba(0,0,0,0.2),
                  0px -5px 35px rgba(54, 254, 23, 0.3);
 }
+
+.my-tab-selector:checked {
+  background-color: green;
+}

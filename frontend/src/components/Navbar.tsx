@@ -3,6 +3,8 @@ import "flowbite";
 import { useUser } from "@/hooks/useUser";
 import { logout } from "@/components/logout";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { ChangePassword } from "./updates/ChangePassword";
 
 export default function Navbar() {
   const { user, loading } = useUser();
@@ -34,11 +36,15 @@ export default function Navbar() {
             tabIndex={0}
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
             <li>
-              <a className="justify-between" onClick={()=>document.getElementById('profile-modal')?.showModal()}>
+              <a onClick={()=>document.getElementById('profile-modal')?.showModal()}>
                 Profile
               </a>
             </li>
-            <li><a>Settings</a></li>
+            <li>
+              <a onClick={()=>document.getElementById('settings-modal')?.showModal()}>
+                Settings
+              </a>
+            </li>
             <li><a onClick={() => {logout(router)}}>Logout</a></li>
           </ul>
         </div>
@@ -63,6 +69,29 @@ export default function Navbar() {
               <p>Email: </p>
               <h3 className="font-bold">{user?.email}</h3>
             </div>
+          </div>
+        </div>
+      </div>
+    </dialog>
+    <dialog id="settings-modal" className="modal ">
+      <div className="modal-box w-fit">
+        <form method="dialog">
+          <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+        <div role="tablist" className="tabs tabs-bordered bg-transparent tabs-lg">
+          <input type="radio" name="my_tabs_1" role="tab" className="tab" aria-label="Zmiana hasła" />
+          <div role="tabpanel" className="tab-content p-2">
+            <ChangePassword />
+          </div>
+          <input
+            type="radio"
+            name="my_tabs_1"
+            role="tab"
+            className="tab"
+            aria-label="Zmiana imienia i nazwiska"
+            defaultChecked />
+          <div role="tabpanel" className="tab-content p-10">
+            Tab content 2
           </div>
         </div>
       </div>
