@@ -1,10 +1,13 @@
+import { UserProvider } from "@/hooks/userContext";
 import Navbar from "../../components/Navbar";
 import { Toaster } from "react-hot-toast";
 
 const Home = () => {
   return (
     <>
-      <Navbar />
+      <UserProvider>
+        <Navbar />
+     </UserProvider>
       <Toaster />
     </>
   );

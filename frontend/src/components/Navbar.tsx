@@ -1,12 +1,12 @@
 "use client";
 import "flowbite";
-import { useUser } from "@/hooks/useUser";
+import { useUser } from "@/hooks/userContext";
 import { logout } from "@/components/logout";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { ChangePassword } from "./updates/ChangePassword";
+import { ChangeNames } from "./updates/ChangeNames";
 
-export default function Navbar() {
+export default function Navbar(){
   const { user, loading } = useUser();
   const router = useRouter();
 
@@ -90,8 +90,8 @@ export default function Navbar() {
             className="tab"
             aria-label="Zmiana imienia i nazwiska"
             defaultChecked />
-          <div role="tabpanel" className="tab-content p-10">
-            Tab content 2
+          <div role="tabpanel" className="tab-content p-2">
+            <ChangeNames />
           </div>
         </div>
       </div>
