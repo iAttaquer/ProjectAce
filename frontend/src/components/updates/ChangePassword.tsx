@@ -16,7 +16,7 @@ export const ChangePassword = () => {
     setLoading(true);
 
     if (newPassword !== newPassword2) {
-      setError(<li>Podane hasła nie są identyczne</li>);
+      setError(<li>Podane hasła się różnią</li>);
       setLoading(false);
       return;
     }
@@ -48,7 +48,7 @@ export const ChangePassword = () => {
 
           if (status === 401) {
             localStorage.removeItem('authToken');
-            router.push('/login');
+            router.replace('/login');
             setError(<li>{'Nieupoważniony dostęp. Zaloguj się ponownie.'}</li>);
           }
           if (Array.isArray(error.response.data)) {

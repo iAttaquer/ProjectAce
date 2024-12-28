@@ -1,20 +1,28 @@
 "use client";
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import router from 'next/navigation';
+import { useRouter} from 'next/navigation';
+
+export type User = {
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
 
 const UserContext = createContext<{
-  user: any | null;
+  user: User | null;
   loading: boolean;
-  error: any | null;
+  error: React.ReactNode | null;
   refreshUserData: () => void;
 }>({ user: null, loading: true, error: null, refreshUserData: () => {} });
 
 export const UserProvider = ({ children }: any) => {
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<any | null>(null);
+  const [error, setError] = useState<React.ReactNode | null>(null);
   const [isDataFetching, setIsDataFetching] = useState(false);
+  const router = useRouter();
 
   const refreshUserData = useCallback(async () => {
     if (isDataFetching) return;
@@ -23,15 +31,38 @@ export const UserProvider = ({ children }: any) => {
       const token = localStorage.getItem('authToken');
       if (!token) {
         setLoading(false);
-        router.push('/login');
+        router.replace('/login');
         return;
       }
       const response = await axios.get('/api/account/me', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUser(response.data);
-    } catch (err) {
-      setError(err);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          const status = error.response.status;
+          // console.log(error.response.data); // for debug
+
+          if (status === 401) {
+            localStorage.removeItem('authToken');
+            router.replace('/login');
+            setError(<li>{'Nieupoważniony dostęp. Zaloguj się ponownie.'}</li>);
+          }
+          if (Array.isArray(error.response.data)) {
+            const errorListItems = error.response.data
+              .filter(err => err.description)
+              .map((err, index) => (<li key={index}>{err.description}</li>));
+              setError(errorListItems);
+          } else {
+            setError(<li>{'Błąd połączenia z serwerem'}</li>);
+          }
+        } else {
+          setError(<li>{'Błąd rejestracji'}</li>);
+        }
+      } else {
+        setError(<li>{'Nieoczekiwany błąd'}</li>);
+      }
     } finally {
       setLoading(false);
       setIsDataFetching(false);

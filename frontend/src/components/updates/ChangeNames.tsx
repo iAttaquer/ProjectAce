@@ -21,7 +21,7 @@ export const ChangeNames = () => {
       const token = localStorage.getItem('authToken');
       if (!token) {
         setLoading(false);
-        router.push('/login');
+        router.replace('/login');
         return;
       }
       const response = await axios.put('/api/account/update-names', {

@@ -14,6 +14,9 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      height: {
+        'screen-minus-8.5rem': 'calc(100vh - 8.5rem)',
+      },
     },
   },
   plugins: [

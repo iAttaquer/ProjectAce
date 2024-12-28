@@ -11,8 +11,8 @@ export default function Navbar(){
   const router = useRouter();
 
   return (
-    <>
-    <div className="navbar bg-base-200">
+    <div className="p-3">
+    <div className="navbar bg-base-100 bg-opacity-40 rounded-lg">
       <div className="flex-1">
         <a className="btn btn-ghost text-xl -space-x-2">
           <h1 className="project-title1 text-2xl font-bold text-gray-500">Project</h1>
@@ -96,6 +96,6 @@ export default function Navbar(){
         </div>
       </div>
     </dialog>
-    </>
+    </div>
   );
 }
