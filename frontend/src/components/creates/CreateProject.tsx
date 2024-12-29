@@ -27,7 +27,7 @@ export const CreateProject: React.FC<CreateProjectProps> = ({ onProjectCreated }
         router.replace('/login');
         return;
       }
-      const response = await axios.post('api/projects', {
+      await axios.post('api/projects', {
         name, description, status
       }, {
         headers: {

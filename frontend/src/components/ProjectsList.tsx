@@ -1,8 +1,9 @@
 "use client";
-import { useState, useEffect, useCallback, use } from "react";
+import { useState, useEffect, useCallback, } from "react";
 import axios from "axios";
 import router from "next/router";
 import { CreateProject } from "./creates/CreateProject";
+import { DeleteProject } from "./deletes/DeleteProject";
 
 interface ProjectDto {
   id: string;
@@ -18,6 +19,7 @@ export default function ProjectsList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<React.ReactNode | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 
   const fetchProjects = useCallback(async () => {
     try {
@@ -84,6 +86,11 @@ export default function ProjectsList() {
     project.name.toLowerCase().includes(searchTerm.toLowerCase())
   ).sort((a, b) => a.name.localeCompare(b.name));
 
+
+  const handleCloseDeleteModal = () => {
+    document.getElementById('delete-project-modal')?.close();
+  }
+
   return (
     <>
       <div className="w-1/4 px-3 flex flex-row space-x-2">
@@ -110,8 +117,21 @@ export default function ProjectsList() {
       <div className="p-3 h-screen-minus-8.5rem w-1/4 justify-between overflow-y-auto">
         {filteredProjects.map((project) => (
           <div key={project.id} className="card card-compact bg-base-100 bg-opacity-40 w-full shadow-xl mb-4">
+            <div className="dropdown dropdown-end" >
+              <div tabIndex={0} role="button" className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+                <i className="fi fi-bs-menu-dots-vertical"></i>
+              </div>
+              <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-32 p-2 shadow">
+                <li><a onClick={()=>document.getElementById('change-project-modal')?.showModal()}>
+                  <i className="fi fi-rr-pencil"></i> Edytuj
+                </a></li>
+                <li><a onClick={()=>{setSelectedProjectId(project.id);document.getElementById('delete-project-modal')?.showModal()}}>
+                  <i className="fi fi-rs-trash"></i> Usuń
+                </a></li>
+              </ul>
+            </div>
             <div className="card-body">
-              <h2 className="card-title">{project.name}</h2>
+              <h2 className="card-title overflow-hidden w-11/12">{project.name}</h2>
               <p className="w-72 overflow-hidden text-ellipsis">{project.description?.substring(0, 120)}</p>
               <span className="px-2 pb-1 w-fit h-fit rounded-md font-bold bg-gray-100 bg-opacity-10 border border-gray-500 select-none">
                 {project.status}
@@ -131,6 +151,26 @@ export default function ProjectsList() {
             </h3>
           </div>
           <CreateProject onProjectCreated={refreshProjectsList}/>
+        </div>
+      </dialog>
+      <dialog id="change-project-modal" className="modal">
+        <div className="modal-box">
+          <form method="dialog">
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+          </form>
+          <div className="flex items-center justify-between p-2 border-b rounded-t dark:border-gray-600">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+               Edytuj projekt
+            </h3>
+          </div>
+        </div>
+      </dialog>
+      <dialog id="delete-project-modal" className="modal">
+        <div className="modal-box">
+          <form method="dialog">
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+          </form>
+          <DeleteProject projectId={selectedProjectId!} onProjectDeleted={refreshProjectsList} onClose={handleCloseDeleteModal}/>
         </div>
       </dialog>
     </>
