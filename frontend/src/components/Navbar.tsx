@@ -79,7 +79,7 @@ export default function Navbar(){
           <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
         </form>
         <div role="tablist" className="tabs tabs-bordered bg-transparent tabs-lg">
-          <input type="radio" name="my_tabs_1" role="tab" className="tab" aria-label="Zmiana hasła" />
+          <input type="radio" name="my_tabs_1" role="tab" className="tab text-lg font-semibold" aria-label="Zmiana hasła" />
           <div role="tabpanel" className="tab-content p-2">
             <ChangePassword />
           </div>
