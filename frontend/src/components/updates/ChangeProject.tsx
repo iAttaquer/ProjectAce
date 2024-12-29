@@ -1,19 +1,30 @@
 "use client";
 import axios from "axios";
 import router from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { ProjectDto } from "../ProjectsList";
 
-interface CreateProjectProps {
-  onProjectCreated: () => void;
+interface ChangeProjectProps {
+  project: ProjectDto;
+  onProjectUpdated: () => void;
+  onClose: () => void;
 }
 
-export const CreateProject: React.FC<CreateProjectProps> = ({ onProjectCreated }) => {
-  const [name, setName] = useState<string>('');
-  const [status, setStatus] = useState<string>("Aktywny");
-  const [description, setDescription] = useState<string>('');
+export const ChangeProject: React.FC<ChangeProjectProps> = ({ project, onProjectUpdated, onClose }) => {
+  const [name, setName] = useState<string>(project?.name || '');
+  const [description, setDescription] = useState<string>(project?.description || '');
+  const [status, setStatus] = useState<string>(project?.status || "Aktywny");
   const [error, setError] = useState<React.ReactNode | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (project) {
+      setName(project.name);
+      setDescription(project.description || '');
+      setStatus(project.status);
+    }
+  }, [project]);
 
   const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
@@ -27,18 +38,16 @@ export const CreateProject: React.FC<CreateProjectProps> = ({ onProjectCreated }
         router.replace('/login');
         return;
       }
-      await axios.post('api/projects', {
+      await axios.put(`/api/projects/${project?.id}`, {
         name, description, status
       }, {
         headers: {
             Authorization: `Bearer ${token}`,
-        }
-      },);
-      onProjectCreated();
-      setName('');
-      setDescription('');
-      setStatus('Aktywny');
-      toast.success('Projekt został utworzony!', { position: "bottom-center"});
+          },
+      });
+      onProjectUpdated();
+      toast.success('Projekt został zmieniony!', { position: "bottom-center"});
+      onClose();
     }
     catch (error) {
       if (axios.isAxiosError(error)) {
@@ -109,9 +118,9 @@ export const CreateProject: React.FC<CreateProjectProps> = ({ onProjectCreated }
             <span className="loading loading-spinner"></span>
           </>
         ) : (
-          'Utwórz'
+          'Zapisz'
         )}
       </button>
     </form>
   );
-}
+};

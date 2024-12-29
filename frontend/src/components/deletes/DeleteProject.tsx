@@ -5,7 +5,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 
 interface DeleteProjectProps {
-  projectId: string;
+  projectId: string | undefined;
   onProjectDeleted: () => void;
   onClose: () => void;
 }

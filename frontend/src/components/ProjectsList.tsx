@@ -4,8 +4,9 @@ import axios from "axios";
 import router from "next/router";
 import { CreateProject } from "./creates/CreateProject";
 import { DeleteProject } from "./deletes/DeleteProject";
+import { ChangeProject } from "./updates/ChangeProject";
 
-interface ProjectDto {
+export interface ProjectDto {
   id: string;
   name: string;
   description: string | null;
@@ -19,7 +20,7 @@ export default function ProjectsList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<React.ReactNode | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [selectedProject, setSelectedProject] = useState<ProjectDto | null>(null);
 
   const fetchProjects = useCallback(async () => {
     try {
@@ -90,6 +91,9 @@ export default function ProjectsList() {
   const handleCloseDeleteModal = () => {
     document.getElementById('delete-project-modal')?.close();
   }
+  const handleCloseChangeModal = () => {
+    document.getElementById('change-project-modal')?.close();
+  }
 
   return (
     <>
@@ -122,10 +126,10 @@ export default function ProjectsList() {
                 <i className="fi fi-bs-menu-dots-vertical"></i>
               </div>
               <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-32 p-2 shadow">
-                <li><a onClick={()=>document.getElementById('change-project-modal')?.showModal()}>
+                <li><a onClick={()=>{setSelectedProject(project);document.getElementById('change-project-modal')?.showModal()}}>
                   <i className="fi fi-rr-pencil"></i> Edytuj
                 </a></li>
-                <li><a onClick={()=>{setSelectedProjectId(project.id);document.getElementById('delete-project-modal')?.showModal()}}>
+                <li><a onClick={()=>{setSelectedProject(project);document.getElementById('delete-project-modal')?.showModal()}}>
                   <i className="fi fi-rs-trash"></i> Usuń
                 </a></li>
               </ul>
@@ -163,6 +167,9 @@ export default function ProjectsList() {
                Edytuj projekt
             </h3>
           </div>
+          {selectedProject && (
+            <ChangeProject project={selectedProject} onProjectUpdated={refreshProjectsList} onClose={handleCloseChangeModal}/>
+          )}
         </div>
       </dialog>
       <dialog id="delete-project-modal" className="modal">
@@ -170,7 +177,7 @@ export default function ProjectsList() {
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
           </form>
-          <DeleteProject projectId={selectedProjectId!} onProjectDeleted={refreshProjectsList} onClose={handleCloseDeleteModal}/>
+          <DeleteProject projectId={selectedProject?.id} onProjectDeleted={refreshProjectsList} onClose={handleCloseDeleteModal}/>
         </div>
       </dialog>
     </>
