@@ -1,5 +1,4 @@
 "use client";
-import "flowbite";
 import { useUser } from "@/hooks/userContext";
 import { logout } from "@/components/logout";
 import { useRouter } from "next/navigation";

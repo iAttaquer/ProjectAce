@@ -5,6 +5,7 @@ import router from "next/router";
 import { CreateProject } from "./creates/CreateProject";
 import { DeleteProject } from "./deletes/DeleteProject";
 import { ChangeProject } from "./updates/ChangeProject";
+import { useProject } from "@/hooks/projectContext";
 
 export interface ProjectDto {
   id: string;
@@ -16,6 +17,7 @@ export interface ProjectDto {
 }
 
 export default function ProjectsList() {
+  const { project: fetchedProject, selectedProjectId, setSelectedProjectId, fetchProjectDetails } = useProject();
   const [projects, setProjects] = useState<ProjectDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<React.ReactNode | null>(null);
@@ -63,20 +65,28 @@ export default function ProjectsList() {
     }
   }, []);
 
-  useEffect(() => {
-    fetchProjects();
-  }, [fetchProjects]);
-
   const [refreshProjects, setRefreshProjects] = useState(false);
+  const [refreshProjectsAfterDelete, setRefreshProjectsAfterDelete] = useState(false);
   useEffect(() => {
     if (refreshProjects) {
-      fetchProjects();
       setRefreshProjects(false);
+      fetchProjectDetails(selectedProjectId);
     }
-  }, [refreshProjects, fetchProjects]);
+    if (refreshProjectsAfterDelete) {
+      setRefreshProjectsAfterDelete(false);
+      fetchProjectDetails(null);
+    }
+    fetchProjects();
+  }, [refreshProjects, fetchProjects, refreshProjectsAfterDelete]);
+
 
   const refreshProjectsList = () => {
     setRefreshProjects(true);
+  };
+
+  const refreshProjectsListAfterDelete = () => {
+    setRefreshProjects(true);
+    setRefreshProjectsAfterDelete(true);
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,21 +106,21 @@ export default function ProjectsList() {
   }
 
   return (
-    <>
-      <div className="w-1/4 px-3 flex flex-row space-x-2">
+    <div className="w-1/4">
+      <div className=" px-3 flex flex-row space-x-2">
         <form className="flex-grow">
           <label htmlFor="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
           <div className="relative">
-              <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                  <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-                  </svg>
-              </div>
-              <input type="search" id="default-search" className="block w-full p-3 ps-10 text-sm text-gray-100 shadow-xl rounded-lg focus:ring-green-500 focus:border-green-500  bg-base-100 bg-opacity-50"
-                placeholder="Wyszukaj projekt"
-                value={searchTerm}
-                onChange={handleSearchChange}
-                required />
+            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+              <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+              </svg>
+            </div>
+            <input type="search" id="default-search" className="block w-full p-3 ps-10 text-sm text-gray-100 shadow-xl rounded-lg focus:ring-green-500 focus:border-green-500  bg-base-100 bg-opacity-50"
+              placeholder="Wyszukaj projekt"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              required />
           </div>
         </form>
         <button className="btn btn-square bg-gradient-to-r from-green-500 via-green-600 to-green-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80"
@@ -118,9 +128,10 @@ export default function ProjectsList() {
           <i className="fi fi-br-plus"></i>
         </button>
       </div>
-      <div className="p-3 h-screen-minus-8.5rem w-1/4 justify-between overflow-y-auto">
+      <div className="p-3 h-screen-minus-8.5rem  justify-between overflow-y-auto">
         {filteredProjects.map((project) => (
-          <div key={project.id} className="card card-compact bg-base-100 bg-opacity-40 w-full shadow-xl mb-4">
+          <div key={project.id} className="card card-compact bg-base-100 bg-opacity-40 w-full shadow-xl mb-4"
+            onClick={() => setSelectedProjectId(project.id)}>
             <div className="dropdown dropdown-end" >
               <div tabIndex={0} role="button" className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
                 <i className="fi fi-bs-menu-dots-vertical"></i>
@@ -177,9 +188,9 @@ export default function ProjectsList() {
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
           </form>
-          <DeleteProject projectId={selectedProject?.id} onProjectDeleted={refreshProjectsList} onClose={handleCloseDeleteModal}/>
+          <DeleteProject projectId={selectedProject?.id} onProjectDeleted={refreshProjectsListAfterDelete} onClose={handleCloseDeleteModal}/>
         </div>
       </dialog>
-    </>
+    </div>
   );
 }

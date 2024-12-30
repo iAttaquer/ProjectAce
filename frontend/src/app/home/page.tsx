@@ -2,6 +2,8 @@ import { UserProvider } from "@/hooks/userContext";
 import Navbar from "../../components/Navbar";
 import { Toaster } from "react-hot-toast";
 import ProjectsList from "@/components/ProjectsList";
+import { ProjectProvider } from "@/hooks/projectContext";
+import ProjectDetails from "@/components/ProjectDetails";
 
 const Home = () => {
   return (
@@ -10,7 +12,12 @@ const Home = () => {
         <Navbar />
       </UserProvider>
       <Toaster />
-      <ProjectsList />
+      <ProjectProvider>
+        <div className="flex flex-row">
+          <ProjectsList />
+          <ProjectDetails />
+        </div>
+      </ProjectProvider>
     </div>
   );
 }
