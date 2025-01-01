@@ -36,15 +36,15 @@ export default function Navbar(){
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
             <li>
               <a onClick={()=>document.getElementById('profile-modal')?.showModal()}>
-                Profile
+                Profil
               </a>
             </li>
             <li>
               <a onClick={()=>document.getElementById('settings-modal')?.showModal()}>
-                Settings
+                Ustawienia
               </a>
             </li>
-            <li><a onClick={() => {logout(router)}}>Logout</a></li>
+            <li><a onClick={() => {logout(router)}}>Wyloguj</a></li>
           </ul>
         </div>
       </div>

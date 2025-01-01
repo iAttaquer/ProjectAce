@@ -123,7 +123,7 @@ public class AssignmentController : ControllerBase
     /// </summary>
     /// <param name="projectId"></param>
     /// <returns></returns>
-    [HttpGet("{projectId:guid}")]
+    [HttpGet("projects/{projectId:guid}")]
     [Authorize]
     [ProducesResponseType(typeof(List<AssignmentDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

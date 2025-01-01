@@ -55,7 +55,7 @@ export default function ProjectsList() {
             setError(<li>{'Błąd połączenia z serwerem'}</li>);
           }
         } else {
-          setError(<li>{'Błąd rejestracji'}</li>);
+          setError(<li>{'Błąd'}</li>);
         }
       } else {
         setError(<li>{'Nieoczekiwany błąd'}</li>);
@@ -107,13 +107,13 @@ export default function ProjectsList() {
 
   return (
     <div className="w-1/4">
-      <div className=" px-3 flex flex-row space-x-2">
+      <div className=" pl-3 pr-1 flex flex-row space-x-2">
         <form className="flex-grow">
           <label htmlFor="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
           <div className="relative">
             <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
               <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
               </svg>
             </div>
             <input type="search" id="default-search" className="block w-full p-3 ps-10 text-sm text-gray-100 shadow-xl rounded-lg focus:ring-green-500 focus:border-green-500  bg-base-100 bg-opacity-50"
@@ -123,12 +123,12 @@ export default function ProjectsList() {
               required />
           </div>
         </form>
-        <button className="btn btn-square bg-gradient-to-r from-green-500 via-green-600 to-green-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80"
+        <button className="btn btn-square bg-gradient-to-r text-white from-green-500 via-green-600 to-green-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80"
           onClick={()=>document.getElementById('create-project-modal')?.showModal()}>
           <i className="fi fi-br-plus"></i>
         </button>
       </div>
-      <div className="p-3 h-screen-minus-8.5rem  justify-between overflow-y-auto">
+      <div className="py-3 pl-3 pr-1 h-screen-minus-8.5rem justify-between overflow-y-auto">
         {filteredProjects.map((project) => (
           <div key={project.id} className="card card-compact bg-base-100 bg-opacity-40 w-full shadow-xl mb-4"
             onClick={() => setSelectedProjectId(project.id)}>
@@ -137,10 +137,10 @@ export default function ProjectsList() {
                 <i className="fi fi-bs-menu-dots-vertical"></i>
               </div>
               <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-32 p-2 shadow">
-                <li><a onClick={()=>{setSelectedProject(project);document.getElementById('change-project-modal')?.showModal()}}>
+                <li><a onClick={(e)=>{e.stopPropagation();setSelectedProject(project);document.getElementById('change-project-modal')?.showModal()}}>
                   <i className="fi fi-rr-pencil"></i> Edytuj
                 </a></li>
-                <li><a onClick={()=>{setSelectedProject(project);document.getElementById('delete-project-modal')?.showModal()}}>
+                <li><a onClick={(e)=>{e.stopPropagation();setSelectedProject(project);document.getElementById('delete-project-modal')?.showModal()}}>
                   <i className="fi fi-rs-trash"></i> Usuń
                 </a></li>
               </ul>
@@ -162,7 +162,7 @@ export default function ProjectsList() {
           </form>
           <div className="flex items-center justify-between p-2 border-b rounded-t dark:border-gray-600">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Stwórz nowy projekt
+              Stwórz nowy projekt
             </h3>
           </div>
           <CreateProject onProjectCreated={refreshProjectsList}/>
@@ -175,7 +175,7 @@ export default function ProjectsList() {
           </form>
           <div className="flex items-center justify-between p-2 border-b rounded-t dark:border-gray-600">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-               Edytuj projekt
+              Edytuj projekt
             </h3>
           </div>
           {selectedProject && (
