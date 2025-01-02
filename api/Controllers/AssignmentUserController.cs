@@ -80,7 +80,7 @@ public class AssignmentUsersController : ControllerBase
   [HttpGet("{assignmentId:guid}")]
   [Authorize]
   [AuthorizeUser]
-  [ProducesResponseType(typeof(UserDto),StatusCodes.Status200OK)]
+  [ProducesResponseType(typeof(List<UserDto>), StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status400BadRequest)]
   [ProducesResponseType(StatusCodes.Status403Forbidden)]
   [ProducesResponseType(StatusCodes.Status404NotFound)]

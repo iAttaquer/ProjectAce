@@ -36,7 +36,10 @@ public class ProjectTeamRepository : IProjectTeamRepository
 
   public async Task<List<ProjectTeam>> GetAllAsync()
   {
-    var ProjectTeams = _context.ProjectTeams.Include(p => p.Project).Include(u => u.Member).AsQueryable();
+    var ProjectTeams = _context.ProjectTeams
+      .Include(p => p.Project)
+      .Include(u => u.Member)
+      .AsQueryable();
     return await ProjectTeams.ToListAsync();
   }
 
@@ -47,6 +50,15 @@ public class ProjectTeamRepository : IProjectTeamRepository
        .Include(x => x.Project)
        .Where(x => x.MemberId == userId)
        .ToListAsync();
+  }
+
+  public async Task<List<ProjectTeam>> GetAllByProjectIdAsync(Guid projectId)
+  {
+    return await _context.ProjectTeams
+      .Include(x => x.Project)
+      .Include(x => x.Member)
+      .Where(x => x.ProjectId == projectId)
+      .ToListAsync();
   }
 
   public async Task<bool> IsMemberInProject(Guid projectId, string memberId)

@@ -35,7 +35,7 @@ public class ProjectTeamController : ControllerBase
     /// <param name="projectId"></param>
     /// <param name="userId"></param>
     /// <returns></returns>
-    [HttpPost("{projectId}/{userId}")]
+    [HttpPost("{projectId:guid}/{userId}")]
     [Authorize]
     [AuthorizeUser]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -71,7 +71,7 @@ public class ProjectTeamController : ControllerBase
             MemberId = userId,
         });
 
-        return StatusCode(StatusCodes.Status201Created);
+        return Ok();
     }
 
     /// <summary>
@@ -102,7 +102,7 @@ public class ProjectTeamController : ControllerBase
             return Forbid();
         }
 
-        var members = await _projectTeamRepo.GetAllAsync();
+        var members = await _projectTeamRepo.GetAllByProjectIdAsync(projectId);
         var userDto = members.Select(u => u.ToUserDto());
 
         return Ok(userDto);
