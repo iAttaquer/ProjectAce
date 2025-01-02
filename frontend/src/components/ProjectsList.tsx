@@ -6,6 +6,7 @@ import { CreateProject } from "./creates/CreateProject";
 import { DeleteProject } from "./deletes/DeleteProject";
 import { ChangeProject } from "./updates/ChangeProject";
 import { useProject } from "@/hooks/projectContext";
+import Badge from "./Badge";
 
 export interface ProjectDto {
   id: string;
@@ -116,7 +117,7 @@ export default function ProjectsList() {
                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
               </svg>
             </div>
-            <input type="search" id="default-search" className="block w-full p-3 ps-10 text-sm text-gray-100 shadow-xl rounded-lg focus:ring-green-500 focus:border-green-500  bg-base-100 bg-opacity-50"
+            <input type="search" id="default-search" className="block w-full p-3 ps-9 text-sm text-gray-100 shadow-xl rounded-lg focus:ring-green-500 focus:border-green-500  bg-base-100 bg-opacity-50"
               placeholder="Wyszukaj projekt"
               value={searchTerm}
               onChange={handleSearchChange}
@@ -130,7 +131,7 @@ export default function ProjectsList() {
       </div>
       <div className="py-3 pl-3 pr-1 h-screen-minus-8.5rem justify-between overflow-y-auto">
         {filteredProjects.map((project) => (
-          <div key={project.id} className="card card-compact bg-base-100 bg-opacity-40 w-full shadow-xl mb-4"
+          <div key={project.id} className="card card-compact bg-base-100 bg-opacity-40 w-full shadow-xl mb-4 hover:bg-base-100"
             onClick={() => setSelectedProjectId(project.id)}>
             <div className="dropdown dropdown-end" >
               <div tabIndex={0} role="button" className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
@@ -148,9 +149,7 @@ export default function ProjectsList() {
             <div className="card-body">
               <h2 className="card-title overflow-hidden w-11/12">{project.name}</h2>
               <p className="w-72 overflow-hidden text-ellipsis">{project.description?.substring(0, 120)}</p>
-              <span className="px-2 pb-1 w-fit h-fit rounded-md font-bold bg-gray-100 bg-opacity-10 border border-gray-500 select-none">
-                {project.status}
-              </span>
+              <Badge status={project.status}/>
             </div>
           </div>
         ))}

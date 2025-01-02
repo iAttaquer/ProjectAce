@@ -25,7 +25,7 @@ export default function Navbar(){
               <div className="h-10 flex rounded-full row justify-center items-center">
                 <i className="fi fi-sr-user flex"></i>
               </div>
-              <div className="flex items-center">
+              <div className="flex items-center text-md">
                 {loading && <div className="h-2.5 animate-pulse bg-gray-200 rounded-full dark:bg-gray-700 w-28 "></div>}
                 {user ? `${user.firstName} ${user.lastName}` : null}
               </div>

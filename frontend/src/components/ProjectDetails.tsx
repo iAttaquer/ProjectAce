@@ -7,6 +7,8 @@ import router from "next/router";
 import toast from "react-hot-toast";
 import { DeleteTask } from "./deletes/DeleteTask";
 import { ChangeTask } from "./updates/ChangeTask";
+import Badge from "./Badge";
+import Members from "./Members";
 
 export default function ProjectDetails() {
   const { project, tasks, loading, fetchTasks } = useProject();
@@ -88,60 +90,61 @@ export default function ProjectDetails() {
               </button>
             </div>
           </div>
-          <div className="w-full h-screen-minus-10.5rem overflow-y-auto">
-            {sortedTasks.map((task) => (
-              <div key={task.id} className="card card-compact flex flex-row items-center space-x-2 font-semibold text-xl w-full h-fit px-3 pt-2 pb-3  hover:bg-base-100 hover:bg-opacity-40 hover:shadow-xl rounded-lg relative group"
-                onClick={()=>{setSelectedTask(task);document.getElementById('task-details-modal')?.showModal()}}>
-                <input type="checkbox"
-                  checked={task.status === "Wykonane"} readOnly
-                  className="checkbox checkbox-success checkbox-sm"
-                  onClick={(e)=>handleCheckboxChange(e, task)}/>
-                <h3>{task.name}</h3>
-                <div className="absolute right-2 top-2 space-x-1">
-                  <button className="btn btn-circle btn-sm btn-ghost opacity-0 transition-opacity duration-150 group-hover:visible group-hover:opacity-100"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedTask(task);
-                      document.getElementById('change-task-modal')?.showModal();
-                    }}>
-                    <i className="fi fi-rr-pencil"></i>
-                  </button>
-                  <button className="btn btn-circle btn-sm btn-ghost opacity-0 transition-opacity duration-150 group-hover:visible group-hover:opacity-100"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedTask(task);
-                      document.getElementById('delete-task-modal')?.showModal();
-                    }}>
-                    <i className="fi fi-rs-trash"></i>
-                  </button>
+          <div className="flex flex-row">
+            <div className="w-full h-screen-minus-10.5rem overflow-y-auto">
+              {sortedTasks.map((task) => (
+                <div key={task.id} className="card card-compact flex flex-row items-center space-x-2 font-semibold text-xl w-full h-fit px-3 pt-2 pb-3  hover:bg-base-100 hover:bg-opacity-40 hover:shadow-xl rounded-lg relative group"
+                  onClick={()=>{setSelectedTask(task);document.getElementById('task-details-modal')?.showModal()}}>
+                  <input type="checkbox"
+                    checked={task.status === "Wykonane"} readOnly
+                    className="checkbox checkbox-success checkbox-sm"
+                    onClick={(e)=>handleCheckboxChange(e, task)}/>
+                  <h3>{task.name}</h3>
+                  <div className="absolute right-2 top-2 space-x-1">
+                    <button className="btn btn-circle btn-sm btn-ghost opacity-0 transition-opacity duration-150 group-hover:visible group-hover:opacity-100"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedTask(task);
+                        document.getElementById('change-task-modal')?.showModal();
+                      }}>
+                      <i className="fi fi-rr-pencil"></i>
+                    </button>
+                    <button className="btn btn-circle btn-sm btn-ghost opacity-0 transition-opacity duration-150 group-hover:visible group-hover:opacity-100"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedTask(task);
+                        document.getElementById('delete-task-modal')?.showModal();
+                      }}>
+                      <i className="fi fi-rs-trash"></i>
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+            <Members />
           </div>
           <dialog id="project-details-modal" className="modal">
             <div className="modal-box">
               <p className="font-bold text-xl mb-4">{project.name}</p>
-              <span className="px-2 pb-1 w-fit h-fit rounded-md font-bold bg-gray-100 bg-opacity-10 border border-gray-500 select-none">
-                {project.status}
-              </span>
+              <Badge status={project.status}/>
               <p className="py-2">{project.description}</p>
             </div>
             <form method="dialog" className="modal-backdrop">
               <button>close</button>
             </form>
           </dialog>
+          {selectedTask && (
           <dialog id="task-details-modal" className="modal">
             <div className="modal-box">
-              <p className="font-bold text-xl mb-4">{selectedTask?.name}</p>
-              <span className="px-2 pb-1 w-fit h-fit rounded-md font-bold bg-gray-100 bg-opacity-10 border border-gray-500 select-none">
-                {selectedTask?.status}
-              </span>
-              <p className="py-2">{selectedTask?.description}</p>
+              <p className="font-bold text-xl mb-4">{selectedTask.name}</p>
+                <Badge status={selectedTask.status}/>
+              <p className="py-2">{selectedTask.description}</p>
             </div>
             <form method="dialog" className="modal-backdrop">
               <button>close</button>
             </form>
           </dialog>
+          )}
           <dialog id="create-task-modal" className="modal">
             <div className="modal-box">
               <form method="dialog">

@@ -10,7 +10,6 @@ const Home = () => {
     <div className="h-screen bg-gray-900">
       <UserProvider>
         <Navbar />
-      </UserProvider>
       <Toaster />
       <ProjectProvider>
         <div className="flex flex-row">
@@ -18,6 +17,7 @@ const Home = () => {
           <ProjectDetails />
         </div>
       </ProjectProvider>
+      </UserProvider>
     </div>
   );
 }

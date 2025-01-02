@@ -14,21 +14,30 @@ export type AssignmentDto = {
   projectId: string;
 };
 
+export type ProjectTeamDto = {
+  id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+}
 const ProjectContext = createContext<{
   project: ProjectDto | null;
   tasks: AssignmentDto[];
+  members: ProjectTeamDto[];
   loading: boolean;
   error: React.ReactNode | null;
   selectedProjectId: string | null;
   setSelectedProjectId: (id: string | null) => void;
   fetchProjectDetails: (id: string | null) => void;
   fetchTasks: () => void;
-}>({ project: null, tasks: [], loading: true, error: null, setSelectedProjectId: () => {}, selectedProjectId: null
-  , fetchProjectDetails: () => {}, fetchTasks: () => {} });
+  fetchMembers: () => void;
+}>({ project: null, tasks: [], members: [], loading: true, error: null, setSelectedProjectId: () => {}, selectedProjectId: null
+  , fetchProjectDetails: () => {}, fetchTasks: () => {}, fetchMembers: () => {} });
 
 export const ProjectProvider = ({ children }: any) => {
   const [project, setProject] = useState<ProjectDto | null>(null);
   const [tasks, setTasks] = useState<AssignmentDto[]>([]);
+  const [members, setMembers] = useState<ProjectTeamDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<React.ReactNode | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
@@ -136,9 +145,59 @@ export const ProjectProvider = ({ children }: any) => {
     fetchTasks();
   }, [selectedProjectId, fetchTasks]);
 
+  const fetchMembers = useCallback(async() => {
+
+    if (!project) {
+      setMembers([]);
+      return;
+    }
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        setLoading(false);
+        router.replace('/login');
+        return;
+      }
+      const response = await axios.get(`/api/project-teams/${project.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setMembers(response.data);
+    }
+    catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          const status = error.response.status;
+
+          if (status === 401) {
+            localStorage.removeItem('authToken');
+            router.replace('/login');
+            setError(<li>{'Nieupoważniony dostęp. Zaloguj się ponownie.'}</li>);
+          }
+          if (Array.isArray(error.response.data)) {
+            const errorListItems = error.response.data
+              .filter(err => err.description)
+              .map((err, index) => (<li key={index}>{err.description}</li>));
+              setError(errorListItems);
+          } else {
+            setError(<li>{'Błąd połączenia z serwerem'}</li>);
+          }
+        } else {
+          setError(<li>{'Błąd'}</li>);
+        }
+      } else {
+        setError(<li>{'Nieoczekiwany błąd'}</li>);
+      }
+    } finally {
+      setLoading(false);
+    }
+  },[project]);
+
+  useEffect(()=>{
+    fetchMembers();
+  },[selectedProjectId, fetchMembers]);
 
   return (
-    <ProjectContext.Provider value={{ project, tasks, loading, error, selectedProjectId, setSelectedProjectId, fetchProjectDetails, fetchTasks }}>
+    <ProjectContext.Provider value={{ project, tasks, members, loading, error, selectedProjectId, setSelectedProjectId, fetchProjectDetails, fetchTasks, fetchMembers }}>
       {children}
     </ProjectContext.Provider>
   );
