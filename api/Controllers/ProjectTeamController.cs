@@ -18,15 +18,18 @@ public class ProjectTeamController : ControllerBase
     private readonly IProjectTeamRepository _projectTeamRepo;
     private readonly IProjectRepository _projectRepo;
     private readonly IUserRepository _userRepo;
+    private readonly IAssignmentUserRepository _assignmentUserRepo;
     public ProjectTeamController(
         IProjectTeamRepository projectTeamRepo,
         IProjectRepository projectRepo,
-        IUserRepository userRepo
+        IUserRepository userRepo,
+        IAssignmentUserRepository assignmentUserRepo
         )
     {
         _projectTeamRepo = projectTeamRepo;
         _projectRepo = projectRepo;
         _userRepo = userRepo;
+        _assignmentUserRepo = assignmentUserRepo;
     }
 
     /// <summary>
@@ -148,6 +151,7 @@ public class ProjectTeamController : ControllerBase
             ProjectId = projectId,
             MemberId = userId
         });
+        await _assignmentUserRepo.RemoveAllFromProject(projectId, userId);
         return NoContent();
     }
 }

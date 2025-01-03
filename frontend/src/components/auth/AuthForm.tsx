@@ -120,10 +120,10 @@ const AuthForm: React.FC<AuthFormProps> = ({ isLogin, onAuth }) => {
         {loading ? (
           <>
             <span className="loading loading-spinner"></span>
-            Rejestracja...
+            {isLogin ? "Logowanie..." : "Rejestracja..."}
           </>
         ) : (
-          'Zarejestruj się'
+          isLogin ? 'Zaloguj się' : 'Zarejestruj się'
         )}
       </button>
       {error &&

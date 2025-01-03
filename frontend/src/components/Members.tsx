@@ -122,7 +122,7 @@ export default function Members() {
   }
 
   const handleCloseDeleteModal = () => {
-    document.getElementById('delete-task-modal')?.close();
+    document.getElementById('delete-member-modal')?.close();
   }
 
   return (
@@ -174,7 +174,7 @@ export default function Members() {
                 onClick={(e) => {
                   e.stopPropagation();
                   setSelectedUserId(member.id);
-                  document.getElementById('delete-task-modal')?.showModal();
+                  document.getElementById('delete-member-modal')?.showModal();
                 }}>
                 <i className="fi fi-rs-user-minus"></i>
               </button>

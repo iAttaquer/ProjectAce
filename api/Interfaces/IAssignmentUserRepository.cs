@@ -12,4 +12,5 @@ public interface IAssignmentUserRepository
     Task<bool> IsMemeberAssignedTo(Guid assignmentId, string userId);
     Task DeleteAsync(AssignmentUser assignmentUser);
     Task<List<AssignmentUser>> GetAllByMemberIdAsync(string userId);
+    Task RemoveAllFromProject(Guid projectId, string userId);
 }

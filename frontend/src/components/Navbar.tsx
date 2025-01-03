@@ -22,7 +22,7 @@ export default function Navbar(){
         <div className="dropdown dropdown-end">
           <div tabIndex={0} role="button" className="btn btn-ghost">
             <div className="h-10 flex justify-center items-center space-x-2">
-              <div className="h-10 flex rounded-full row justify-center items-center">
+              <div className="w-8 h-8 flex rounded-full row justify-center items-center border border-gray-400">
                 <i className="fi fi-sr-user flex"></i>
               </div>
               <div className="flex items-center text-md">

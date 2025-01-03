@@ -48,4 +48,14 @@ public class AssignmentUserRepository : IAssignmentUserRepository
         return await _context.AssignmentUsers.AnyAsync(
             u => u.AssignmentId == assignmentId && u.UserId == userId);
     }
+
+    public async Task RemoveAllFromProject(Guid projectId, string userId)
+    {
+        var assignmentUsersToRemove = _context.AssignmentUsers
+            .Include(a => a.Assignment)
+            .Where(u => u.UserId == userId && u.Assignment.ProjectId == projectId)
+            .AsQueryable();
+        _context.AssignmentUsers.RemoveRange(assignmentUsersToRemove);
+        await _context.SaveChangesAsync();
+    }
 }
