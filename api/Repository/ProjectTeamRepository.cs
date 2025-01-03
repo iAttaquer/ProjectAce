@@ -46,10 +46,11 @@ public class ProjectTeamRepository : IProjectTeamRepository
   public async Task<List<ProjectTeam>> GetAllByMemberAsync(string userId)
   {
     return await _context.ProjectTeams
-       .Include(x => x.Member)
-       .Include(x => x.Project)
-       .Where(x => x.MemberId == userId)
-       .ToListAsync();
+      .Include(x => x.Member)
+      .Include(x => x.Project)
+      .Include(x => x.Project.CreatedBy)
+      .Where(x => x.MemberId == userId)
+      .ToListAsync();
   }
 
   public async Task<List<ProjectTeam>> GetAllByProjectIdAsync(Guid projectId)
@@ -57,6 +58,7 @@ public class ProjectTeamRepository : IProjectTeamRepository
     return await _context.ProjectTeams
       .Include(x => x.Project)
       .Include(x => x.Member)
+      .Include(x => x.Project.CreatedBy)
       .Where(x => x.ProjectId == projectId)
       .ToListAsync();
   }
