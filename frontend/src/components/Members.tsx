@@ -22,6 +22,7 @@ export default function Members() {
   const [users, setUsers] = useState<UserDto[]>([]);
   const router = useRouter();
   const [selectedUserId, setSelectedUserId] = useState<string>('');
+  const [loading, setLoading] = useState(false);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -78,12 +79,15 @@ export default function Members() {
   },[fetchUsers]);
 
   const addMember = async(userId: string) => {
+    setLoading(true);
     if (!project) {
+      setLoading(false);
       return;
     }
     const token = localStorage.getItem('authToken');
       if (!token) {
         router.replace('/login');
+        setLoading(false);
         return;
       }
     console.log('tutaj');
@@ -111,6 +115,9 @@ export default function Members() {
           toast.error('Błąd!', { position: "bottom-center"});
         }
       }
+    }
+    finally {
+      setLoading(false);
     }
   }
 
@@ -200,27 +207,36 @@ export default function Members() {
               required />
           </div>
           </form>
-          {filteredUsers.map((user)=>(
-            members.find(m => m.username === user.username) ? null : (
-            <div key={user.id} className="card card-compact flex flex-row items-center space-x-2 w-full h-fit px-3 pt-2 pb-3 space-y-1 bg-base-100 bg-opacity-40 shadow-xl rounded-lg relative group">
-              <div className="w-8 h-8 flex rounded-full row justify-center items-center border border-gray-400">
-                <i className="fi fi-sr-user flex"></i>
+          <div className="h-[22rem] overflow-y-auto">
+            {filteredUsers.map((user)=>(
+              members.find(m => m.username === user.username) ? null : (
+              <div key={user.id} className="card card-compact flex flex-row items-center space-x-2 w-full h-fit px-3 pt-2 pb-3 space-y-1 bg-base-100 bg-opacity-40 hover:shadow-xl hover:bg-gray-800 hover:bg-opacity-30 rounded-lg relative group">
+                <div className="w-8 h-8 flex rounded-full row justify-center items-center border border-gray-400">
+                  <i className="fi fi-sr-user flex"></i>
+                </div>
+                <div className="flex flex-col">
+                  <p>{user.firstName} {user.lastName}</p>
+                  <span className="w-fit bg-gray-100 text-gray-800 text-xs font-medium px-1.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">{user.username}</span>
+                </div>
+                <div className="absolute right-2 top-4 space-x-1">
+                  <button className="btn btn-circle btn-sm btn-ghost opacity-0 transition-opacity duration-150 group-hover:visible group-hover:opacity-100"
+                    disabled={loading}
+                    onClick={() => {
+                      addMember(user.id);
+                    }}>
+                    {loading ? (
+                      <>
+                        <span className="loading loading-spinner"></span>
+                      </>
+                    ) : (
+                      <i className="fi fi-rs-user-add"></i>
+                    )}
+                  </button>
+                </div>
               </div>
-              <div className="flex flex-col">
-                <p>{user.firstName} {user.lastName}</p>
-                <span className="w-fit bg-gray-100 text-gray-800 text-xs font-medium px-1.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">{user.username}</span>
-              </div>
-              <div className="absolute right-2 top-4 space-x-1">
-                <button className="btn btn-circle btn-sm btn-ghost opacity-0 transition-opacity duration-150 group-hover:visible group-hover:opacity-100"
-                  onClick={() => {
-                    addMember(user.id);
-                  }}>
-                  <i className="fi fi-rs-user-add"></i>
-                </button>
-              </div>
-            </div>
-            )
-          ))}
+              )
+            ))}
+          </div>
         </div>
       </dialog>
       <dialog id="delete-task-modal" className="modal">

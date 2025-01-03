@@ -1,6 +1,6 @@
 "use client";
 import { AssignmentDto, useProject } from "@/hooks/projectContext";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CreateTask } from "./creates/CreateTask";
 import axios from "axios";
 import router from "next/router";
@@ -8,12 +8,13 @@ import toast from "react-hot-toast";
 import { DeleteTask } from "./deletes/DeleteTask";
 import { ChangeTask } from "./updates/ChangeTask";
 import Badge from "./Badge";
-import Members from "./Members";
+import Members, { UserDto } from "./Members";
 
 export default function ProjectDetails() {
   const { project, tasks, loading, fetchTasks } = useProject();
   const [selectedTask, setSelectedTask] = useState<AssignmentDto | null>(null);
   const [sortedTasks, setSortedTasks] = useState<AssignmentDto[]>([]);
+  const [assignments, setAssignments] = useState<UserDto[]>([]);
 
   const handleCheckboxChange =  async (e, task: AssignmentDto) => {
     e.stopPropagation();
@@ -72,6 +73,43 @@ export default function ProjectDetails() {
     document.getElementById('delete-task-modal')?.close();
   };
 
+  const fetchAssignments = async() => {
+    if (!selectedTask) {
+      setAssignments([]);
+      return;
+    }
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        router.replace('/login');
+        return;
+      }
+      const response = await axios.get(`api/assignment-users/${selectedTask?.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setAssignments(response.data);
+    }
+    catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          const status = error.response.status;
+          console.log(error);
+
+          if (status === 401) {
+            localStorage.removeItem('authToken');
+            router.replace('/login');
+            return;
+          }
+          toast.error('Błąd!', { position: "bottom-center"});
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchAssignments();
+  }, [selectedTask]);
+
   return(
     <div className="w-4/5 mr-3 ml-2 mb-3 flex flex-col">
       {project ? (
@@ -101,6 +139,14 @@ export default function ProjectDetails() {
                     onClick={(e)=>handleCheckboxChange(e, task)}/>
                   <h3>{task.name}</h3>
                   <div className="absolute right-2 top-2 space-x-1">
+                    <button className="btn btn-circle btn-sm btn-ghost opacity-0 transition-opacity duration-150 group-hover:visible group-hover:opacity-100"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedTask(task);
+
+                      }}>
+                      <i className="fi fi-ss-assign"></i>
+                    </button>
                     <button className="btn btn-circle btn-sm btn-ghost opacity-0 transition-opacity duration-150 group-hover:visible group-hover:opacity-100"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -138,11 +184,28 @@ export default function ProjectDetails() {
             <div className="modal-box">
               <p className="font-bold text-xl mb-4">{selectedTask.name}</p>
                 <Badge status={selectedTask.status}/>
-              <p className="py-2">{selectedTask.description}</p>
+              <p className="text-sm py-2">{selectedTask.description}</p>
+              {assignments.length > 0 && (
+              <>
+              <p className="font-semibold">Przypisania:</p>
+              {assignments.map((user) => (
+                <div key={user.id} className="flex flex-row items-center space-x-2 w-full h-fit space-y-1 relative group">
+                  <div className="w-8 h-8 flex rounded-full row justify-center items-center border border-gray-400">
+                    <i className="fi fi-sr-user flex"></i>
+                  </div>
+                  <div className="flex flex-col">
+                    <p>{user.firstName} {user.lastName}</p>
+                    <span className="w-fit bg-gray-100 text-gray-800 text-xs font-medium px-1.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">{user.username}</span>
+                  </div>
+                </div>
+              ))}
+              </>
+              )}
             </div>
             <form method="dialog" className="modal-backdrop">
               <button>close</button>
             </form>
+            
           </dialog>
           )}
           <dialog id="create-task-modal" className="modal">

@@ -17,6 +17,7 @@ export default {
       height: {
         'screen-minus-8.5rem': 'calc(100vh - 8.5rem)',
         'screen-minus-10.5rem': 'calc(100vh - 10.5rem)',
+        'screen-minus-13.5rem': 'calc(100vh - 13.5rem)',
       },
     },
   },
