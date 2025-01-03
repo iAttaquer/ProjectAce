@@ -148,7 +148,7 @@ export default function Members() {
           <i className="fi fi-br-plus"></i>
         </button>
       </div>
-      <div className="h-screen-minus-10.5rem pt-1 space-y-2 overflow-y-auto">
+      <div className="h-screen-minus-13.5rem pt-1 space-y-2 overflow-y-auto">
         {members && filteredMembers.map((member) => (
           (project?.createdBy !== user?.username || member.username === user?.username) ?
           <div key={member.id} className="card card-compact flex flex-row items-center space-x-2 w-full h-fit px-3 pt-2 pb-3 space-y-1 bg-base-100 bg-opacity-40 shadow-xl rounded-lg relative group">
@@ -189,7 +189,7 @@ export default function Members() {
           </form>
           <div className="flex items-center justify-between p-2 border-b rounded-t dark:border-gray-600">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Dodaj nowego członka do projektu
+              Dodaj użytkownika do projektu
             </h3>
           </div>
           <form className="flex-grow">
@@ -239,7 +239,7 @@ export default function Members() {
           </div>
         </div>
       </dialog>
-      <dialog id="delete-task-modal" className="modal">
+      <dialog id="delete-member-modal" className="modal">
         <div className="modal-box">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
