@@ -26,7 +26,7 @@ public class ProjectRepository : IProjectRepository
 
     public async Task<Project?> DeleteAsync(Project project)
     {
-        await _context.Database.ExecuteSqlRawAsync($"CALL delete_project({project.Id})");
+        await _context.Database.ExecuteSqlRawAsync("Call delete_project({0})", project.Id);
         return project;
     }
 
