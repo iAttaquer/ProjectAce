@@ -6,6 +6,7 @@ using api.Data;
 using api.Interfaces;
 using api.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace api.Repository;
 
@@ -25,8 +26,7 @@ public class ProjectRepository : IProjectRepository
 
     public async Task<Project?> DeleteAsync(Project project)
     {
-        _context.Projects.Remove(project);
-        await _context.SaveChangesAsync();
+        await _context.Database.ExecuteSqlRawAsync($"CALL delete_project({project.Id})");
         return project;
     }
 
