@@ -20,7 +20,8 @@ export type ProjectTeamDto = {
   firstName: string;
   lastName: string;
 }
-const ProjectContext = createContext<{
+
+interface ProjectContextType {
   project: ProjectDto | null;
   tasks: AssignmentDto[];
   members: ProjectTeamDto[];
@@ -31,8 +32,19 @@ const ProjectContext = createContext<{
   fetchProjectDetails: (id: string | null) => void;
   fetchTasks: () => void;
   fetchMembers: () => void;
-}>({ project: null, tasks: [], members: [], loading: true, error: null, setSelectedProjectId: () => {}, selectedProjectId: null
-  , fetchProjectDetails: () => {}, fetchTasks: () => {}, fetchMembers: () => {} });
+}
+const ProjectContext = createContext<ProjectContextType>({
+  project: null,
+  tasks: [],
+  members: [],
+  loading: true,
+  error: null,
+  setSelectedProjectId: () => {},
+  selectedProjectId: null,
+  fetchProjectDetails: () => {},
+  fetchTasks: () => {},
+  fetchMembers: () => {}
+});
 
 export const ProjectProvider = ({ children }: any) => {
   const [project, setProject] = useState<ProjectDto | null>(null);
@@ -41,6 +53,33 @@ export const ProjectProvider = ({ children }: any) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<React.ReactNode | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+
+  const handleApiError = useCallback((error: any, customErrorMessage?: string) => {
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        const status = error.response.status;
+
+        if (status === 401) {
+          localStorage.removeItem('authToken');
+          router.replace('/login');
+          setError(<li>{'Nieupoważniony dostęp. Zaloguj się ponownie.'}</li>);
+          return;
+        }
+        if (Array.isArray(error.response.data)) {
+          const errorListItems = error.response.data
+            .filter(err => err.description)
+            .map((err, index) => (<li key={index}>{err.description}</li>));
+          setError(errorListItems);
+        } else {
+          setError(<li>{customErrorMessage ?? 'Błąd połączenia z serwerem'}</li>);
+        }
+      } else {
+        setError(<li>{'Błąd'}</li>)
+      }
+    } else {
+      setError(<li>{'Nieoczekiwany błąd'}</li>);
+    }
+  }, []);
 
   const fetchProjectDetails = useCallback(async (id: string | null) => {
     if (!id) {
@@ -63,37 +102,15 @@ export const ProjectProvider = ({ children }: any) => {
       setSelectedProjectId(id);
     }
     catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          const status = error.response.status;
-
-          if (status === 401) {
-            localStorage.removeItem('authToken');
-            router.replace('/login');
-            setError(<li>{'Nieupoważniony dostęp. Zaloguj się ponownie.'}</li>);
-          }
-          if (Array.isArray(error.response.data)) {
-            const errorListItems = error.response.data
-              .filter(err => err.description)
-              .map((err, index) => (<li key={index}>{err.description}</li>));
-              setError(errorListItems);
-          } else {
-            setError(<li>{'Błąd połączenia z serwerem'}</li>);
-          }
-        } else {
-          setError(<li>{'Błąd'}</li>);
-        }
-      } else {
-        setError(<li>{'Nieoczekiwany błąd'}</li>);
-      }
+      handleApiError(error);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [handleApiError]);
 
   useEffect(() => {
     fetchProjectDetails(selectedProjectId);
-  }, [selectedProjectId, fetchProjectDetails]);
+  }, [selectedProjectId,fetchProjectDetails]);
 
   const fetchTasks = useCallback(async () => {
     if (!project) {
@@ -114,32 +131,14 @@ export const ProjectProvider = ({ children }: any) => {
     }
     catch (error) {
       if (axios.isAxiosError(error)) {
-        if (error.response) {
-          const status = error.response.status;
-
-          if (status === 401) {
-            localStorage.removeItem('authToken');
-            router.replace('/login');
-            setError(<li>{'Nieupoważniony dostęp. Zaloguj się ponownie.'}</li>);
-          }
-          if (Array.isArray(error.response.data)) {
-            const errorListItems = error.response.data
-              .filter(err => err.description)
-              .map((err, index) => (<li key={index}>{err.description}</li>));
-              setError(errorListItems);
-          } else {
-            setError(<li>{'Błąd połączenia z serwerem'}</li>);
-          }
-        } else {
-          setError(<li>{'Błąd'}</li>);
-        }
+        handleApiError(error);
       } else {
         setError(<li>{'Nieoczekiwany błąd'}</li>);
       }
     } finally {
       setLoading(false);
     }
-  }, [project]);
+  }, [project, handleApiError]);
 
   useEffect(() => {
     fetchTasks();
@@ -164,33 +163,11 @@ export const ProjectProvider = ({ children }: any) => {
       setMembers(response.data);
     }
     catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          const status = error.response.status;
-
-          if (status === 401) {
-            localStorage.removeItem('authToken');
-            router.replace('/login');
-            setError(<li>{'Nieupoważniony dostęp. Zaloguj się ponownie.'}</li>);
-          }
-          if (Array.isArray(error.response.data)) {
-            const errorListItems = error.response.data
-              .filter(err => err.description)
-              .map((err, index) => (<li key={index}>{err.description}</li>));
-              setError(errorListItems);
-          } else {
-            setError(<li>{'Błąd połączenia z serwerem'}</li>);
-          }
-        } else {
-          setError(<li>{'Błąd'}</li>);
-        }
-      } else {
-        setError(<li>{'Nieoczekiwany błąd'}</li>);
-      }
+      handleApiError(error);
     } finally {
       setLoading(false);
     }
-  },[project]);
+  },[project, handleApiError]);
 
   useEffect(()=>{
     fetchMembers();

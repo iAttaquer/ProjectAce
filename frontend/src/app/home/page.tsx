@@ -1,3 +1,4 @@
+"use client";
 import { UserProvider } from "@/hooks/userContext";
 import Navbar from "../../components/Navbar";
 import { Toaster } from "react-hot-toast";
