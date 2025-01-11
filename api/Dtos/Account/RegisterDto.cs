@@ -18,9 +18,9 @@ public class RegisterDto
     [Required]
     [MinLength(2, ErrorMessage = "first name must be at least 2 characters")]
     [MaxLength(30, ErrorMessage = "first name must be at most 30 characters")]
-    public string FirstName { get; set; }
+    public required string FirstName { get; set; }
     [Required]
     [MinLength(2, ErrorMessage = "last name must be at least 2 characters")]
     [MaxLength(30, ErrorMessage = "last name must be at most 30 characters")]
-    public string LastName { get; set; }
+    public required string LastName { get; set; }
 }

@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 using api.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -13,12 +10,11 @@ public class ApplicationDBContext : IdentityDbContext<AppUser>
 {
     public ApplicationDBContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
     {
-
     }
-    public DbSet<Project> Projects { get; set; }
-    public DbSet<Assignment> Assignments { get; set; }
-    public DbSet<ProjectTeam> ProjectTeams { get; set; }
-    public DbSet<AssignmentUser> AssignmentUsers { get; set; }
+    public required DbSet<Project> Projects { get; set; }
+    public required DbSet<Assignment> Assignments { get; set; }
+    public required DbSet<ProjectTeam> ProjectTeams { get; set; }
+    public required DbSet<AssignmentUser> AssignmentUsers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

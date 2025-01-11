@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using api.Data;
 using api.Interfaces;
 using api.Models;
@@ -24,10 +20,11 @@ public class ProjectRepository : IProjectRepository
         return project;
     }
 
-    public async Task<Project?> DeleteAsync(Project project)
+    public async Task<bool> DeleteAsync(Guid projectId, string userId)
     {
-        await _context.Database.ExecuteSqlRawAsync("Call delete_project({0})", project.Id);
-        return project;
+        return await _context.Database.SqlQueryRaw<bool>(
+            "SELECT CAST(delete_project({0}, {1}) AS BOOLEAN) AS \"Value\"", new object[] { projectId, userId })
+            .SingleOrDefaultAsync();
     }
 
     public async Task<bool> ExistsAsync(Guid id)

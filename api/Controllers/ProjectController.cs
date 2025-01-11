@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using api.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +7,6 @@ using Microsoft.AspNetCore.Identity;
 using api.Models;
 using System.Security.Claims;
 using api.Extensions;
-using Microsoft.EntityFrameworkCore;
 using api.Filters;
 
 namespace api.Controllers;
@@ -42,7 +37,7 @@ public class ProjectController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreateProjectDto projectDto)
     {
-        if (!ModelState.IsValid){
+        if (!ModelState.IsValid) {
             return BadRequest();
         }
         var user = (AppUser)HttpContext.Items["User"];
@@ -175,21 +170,11 @@ public class ProjectController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
-        if (!ModelState.IsValid) {
-            return BadRequest(ModelState);
-        }
-
-        var toDeleteProject = await _projectRepo.GetByIdAsync(id);
-        if (toDeleteProject is null) {
-            return NotFound("Project does not exist");
-        }
-
         var user = (AppUser)HttpContext.Items["User"];
-        if (toDeleteProject.CreatedById != user.Id) {
-            return Forbid();
-        }
 
-        await _projectRepo.DeleteAsync(toDeleteProject);
+        if (!await _projectRepo.DeleteAsync(id, user.Id)) {
+            return NotFound(new { message = "Project does not exist" });
+        }
         return NoContent();
     }
 }

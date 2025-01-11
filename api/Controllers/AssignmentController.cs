@@ -44,7 +44,8 @@ public class AssignmentController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromRoute] Guid projectId, [FromBody] CreateAssignmentDto createAssignmentDto)
     {
-        if (!ModelState.IsValid) {
+        if (!ModelState.IsValid)
+        {
             return BadRequest(ModelState);
         }
         var user = (AppUser)HttpContext.Items["User"];
@@ -65,7 +66,8 @@ public class AssignmentController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAll()
     {
-        if (!ModelState.IsValid) {
+        if (!ModelState.IsValid)
+        {
             return BadRequest(ModelState);
         }
         var assignments = await _assignmentRepo.GetAllAsync();
@@ -87,12 +89,14 @@ public class AssignmentController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById([FromRoute] Guid id)
     {
-        if (!ModelState.IsValid) {
+        if (!ModelState.IsValid)
+        {
             return BadRequest(ModelState);
         }
         var assignment = await _assignmentRepo.GetByIdAsync(id);
 
-        if (assignment is null) {
+        if (assignment is null)
+        {
             return NotFound("Assignment not found");
         }
 
@@ -130,12 +134,14 @@ public class AssignmentController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetByProjectId([FromRoute] Guid projectId)
     {
-        if (!ModelState.IsValid) {
+        if (!ModelState.IsValid)
+        {
             return BadRequest(ModelState);
         }
 
         var project = await _projectRepo.GetByIdAsync(projectId);
-        if (project is null) {
+        if (project is null)
+        {
             return NotFound("Project not found");
         }
 
@@ -146,7 +152,7 @@ public class AssignmentController : ControllerBase
     }
 
     /// <summary>
-    /// Update an assignment. Only for creator of assignment
+    /// Update an assignment. Only for member of project
     /// </summary>
     /// <param name="id"></param>
     /// <param name="updateDto"></param>
@@ -160,17 +166,20 @@ public class AssignmentController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Update(Guid id, CreateAssignmentDto updateDto)
     {
-        if (!ModelState.IsValid) {
+        if (!ModelState.IsValid)
+        {
             return BadRequest(ModelState);
         }
 
         var existingAssignment = await _assignmentRepo.GetByIdAsync(id);
-        if (existingAssignment is null) {
+        if (existingAssignment is null)
+        {
             return NotFound("Assignment not found");
         }
 
         var user = (AppUser)HttpContext.Items["User"];
-        if (!await _projectTeamRepo.IsMemberInProject(existingAssignment.ProjectId, user.Id)) {
+        if (!await _projectTeamRepo.IsMemberInProject(existingAssignment.ProjectId, user.Id))
+        {
             return Forbid();
         }
         existingAssignment.Name = updateDto.Name;
@@ -182,7 +191,7 @@ public class AssignmentController : ControllerBase
     }
 
     /// <summary>
-    /// Delete an assignment. Only for creator of assignment
+    /// Delete an assignment. Only for member of project
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
@@ -195,17 +204,20 @@ public class AssignmentController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
-        if (!ModelState.IsValid) {
+        if (!ModelState.IsValid)
+        {
             return BadRequest(ModelState);
         }
 
         var toDeleteAssignment = await _assignmentRepo.GetByIdAsync(id);
-        if (toDeleteAssignment is null) {
+        if (toDeleteAssignment is null)
+        {
             return NotFound("Assignment does not exist");
         }
 
         var user = (AppUser)HttpContext.Items["User"];
-        if (toDeleteAssignment.CreatedById != user.Id) {
+        if (toDeleteAssignment.CreatedById != user.Id)
+        {
             return Forbid();
         }
 

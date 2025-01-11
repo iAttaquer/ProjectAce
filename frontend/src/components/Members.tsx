@@ -90,7 +90,6 @@ export default function Members() {
         setLoading(false);
         return;
       }
-    console.log('tutaj');
     try {
       const response = await axios.post(`api/project-teams/${project?.id}/${userId}`, {}, {
         headers: {

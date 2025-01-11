@@ -18,10 +18,8 @@ export interface ProjectDto {
 }
 
 export default function ProjectsList() {
-  const { project: fetchedProject, selectedProjectId, setSelectedProjectId, fetchProjectDetails } = useProject();
+  const { selectedProjectId, setSelectedProjectId, fetchProjectDetails } = useProject();
   const [projects, setProjects] = useState<ProjectDto[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<React.ReactNode | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProject, setSelectedProject] = useState<ProjectDto | null>(null);
 
@@ -29,7 +27,6 @@ export default function ProjectsList() {
     try {
       const token = localStorage.getItem('authToken');
       if (!token) {
-        setLoading(false);
         return;
       }
       const response = await axios.get('api/projects/my-projects', {
@@ -45,25 +42,9 @@ export default function ProjectsList() {
           if (status === 401) {
             localStorage.removeItem('authToken');
             router.replace('/login');
-            setError(<li>{'Nieupoważniony dostęp. Zaloguj się ponownie.'}</li>);
           }
-          if (Array.isArray(error.response.data)) {
-            const errorListItems = error.response.data
-              .filter(err => err.description)
-              .map((err, index) => (<li key={index}>{err.description}</li>));
-              setError(errorListItems);
-          } else {
-            setError(<li>{'Błąd połączenia z serwerem'}</li>);
-          }
-        } else {
-          setError(<li>{'Błąd'}</li>);
         }
-      } else {
-        setError(<li>{'Nieoczekiwany błąd'}</li>);
-      }
-    } finally {
-      setLoading(false);
-    }
+      }    }
   }, []);
 
   const [refreshProjects, setRefreshProjects] = useState(false);

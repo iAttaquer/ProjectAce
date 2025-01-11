@@ -142,7 +142,7 @@ export default function ProjectDetails() {
       if (axios.isAxiosError(error)) {
         if (error.response) {
           const status = error.response.status;
-          console.log(error);
+          // console.log(error);
 
           if (status === 401) {
             localStorage.removeItem('authToken');
