@@ -1,14 +1,20 @@
 "use client";
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
-import { useRouter} from 'next/navigation';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export type User = {
   username: string;
   firstName: string;
   lastName: string;
   email: string;
-}
+};
 
 const UserContext = createContext<{
   user: User | null;
@@ -17,7 +23,7 @@ const UserContext = createContext<{
   refreshUserData: () => void;
 }>({ user: null, loading: true, error: null, refreshUserData: () => {} });
 
-export const UserProvider = ({ children }: any) => {
+export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<React.ReactNode | null>(null);
@@ -28,13 +34,13 @@ export const UserProvider = ({ children }: any) => {
     if (isDataFetching) return;
     setIsDataFetching(true);
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem("authToken");
       if (!token) {
         setLoading(false);
-        router.replace('/login');
+        router.replace("/login");
         return;
       }
-      const response = await axios.get('/api/account/me', {
+      const response = await axios.get("/api/account/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUser(response.data);
@@ -45,23 +51,23 @@ export const UserProvider = ({ children }: any) => {
           // console.log(error.response.data); // for debug
 
           if (status === 401) {
-            localStorage.removeItem('authToken');
-            router.replace('/login');
-            setError(<li>{'Nieupoważniony dostęp. Zaloguj się ponownie.'}</li>);
+            localStorage.removeItem("authToken");
+            router.replace("/login");
+            setError(<li>{"Nieupoważniony dostęp. Zaloguj się ponownie."}</li>);
           }
           if (Array.isArray(error.response.data)) {
             const errorListItems = error.response.data
-              .filter(err => err.description)
-              .map((err, index) => (<li key={index}>{err.description}</li>));
-              setError(errorListItems);
+              .filter((err) => err.description)
+              .map((err, index) => <li key={index}>{err.description}</li>);
+            setError(errorListItems);
           } else {
-            setError(<li>{'Błąd połączenia z serwerem'}</li>);
+            setError(<li>{"Błąd połączenia z serwerem"}</li>);
           }
         } else {
-          setError(<li>{'Błąd rejestracji'}</li>);
+          setError(<li>{"Błąd rejestracji"}</li>);
         }
       } else {
-        setError(<li>{'Nieoczekiwany błąd'}</li>);
+        setError(<li>{"Nieoczekiwany błąd"}</li>);
       }
     } finally {
       setLoading(false);
@@ -83,7 +89,7 @@ export const UserProvider = ({ children }: any) => {
 export const useUser = () => {
   const context = useContext(UserContext);
   if (!context) {
-    throw new Error('useUser must be used within a UserProvider');
+    throw new Error("useUser must be used within a UserProvider");
   }
   return context;
 };

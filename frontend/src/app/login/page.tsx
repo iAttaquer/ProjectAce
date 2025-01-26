@@ -1,14 +1,18 @@
 "use client";
-import { AppLogo } from '@/components/AppLogo';
-import AuthForm from '@/components/auth/AuthForm';
-import { useRouter } from 'next/navigation';
+import { AppLogo } from "@/components/AppLogo";
+import AuthForm from "@/components/auth/AuthForm";
+import { useRouter } from "next/navigation";
+
+export interface UserData {
+  token: string;
+}
 
 const Login: React.FC = () => {
   const router = useRouter();
 
-  const handleLogin = (userData: any) => {
-    localStorage.setItem('authToken', userData.token);
-    router.push('/home');
+  const handleLogin = (userData: string) => {
+    localStorage.setItem("authToken", userData);
+    router.push("/home");
   };
 
   return (
@@ -19,6 +23,6 @@ const Login: React.FC = () => {
       </div>
     </div>
   );
-}
+};
 
 export default Login;

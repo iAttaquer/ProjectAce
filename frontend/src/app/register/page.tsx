@@ -1,13 +1,13 @@
 "use client";
-import { useRouter } from 'next/navigation';
-import AuthForm from '@/components/auth/AuthForm';
-import { AppLogo } from '@/components/AppLogo';
+import { useRouter } from "next/navigation";
+import AuthForm from "@/components/auth/AuthForm";
+import { AppLogo } from "@/components/AppLogo";
 
 const Register: React.FC = () => {
   const router = useRouter();
 
-  const handleRegister = (userData: any) => {
-    router.push('/login');
+  const handleRegister = () => {
+    router.push("/login");
   };
 
   return (
@@ -18,6 +18,6 @@ const Register: React.FC = () => {
       </div>
     </div>
   );
-}
+};
 
 export default Register;

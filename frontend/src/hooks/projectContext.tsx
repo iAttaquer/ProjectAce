@@ -1,8 +1,14 @@
 "use client";
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
-import { ProjectDto } from '../components/ProjectsList';
-import router from 'next/router';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import axios from "axios";
+import { ProjectDto } from "../components/ProjectsList";
+import router from "next/router";
 
 export type AssignmentDto = {
   id: string;
@@ -19,7 +25,7 @@ export type ProjectTeamDto = {
   username: string;
   firstName: string;
   lastName: string;
-}
+};
 
 interface ProjectContextType {
   project: ProjectDto | null;
@@ -43,74 +49,87 @@ const ProjectContext = createContext<ProjectContextType>({
   selectedProjectId: null,
   fetchProjectDetails: () => {},
   fetchTasks: () => {},
-  fetchMembers: () => {}
+  fetchMembers: () => {},
 });
 
-export const ProjectProvider = ({ children }: any) => {
+export const ProjectProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [project, setProject] = useState<ProjectDto | null>(null);
   const [tasks, setTasks] = useState<AssignmentDto[]>([]);
   const [members, setMembers] = useState<ProjectTeamDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<React.ReactNode | null>(null);
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
+    null,
+  );
 
-  const handleApiError = useCallback((error: any, customErrorMessage?: string) => {
-    if (axios.isAxiosError(error)) {
-      if (error.response) {
-        const status = error.response.status;
+  const handleApiError = useCallback(
+    (error: unknown, customErrorMessage?: string) => {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          const status = error.response.status;
 
-        if (status === 401) {
-          localStorage.removeItem('authToken');
-          router.replace('/login');
-          setError(<li>{'Nieupoważniony dostęp. Zaloguj się ponownie.'}</li>);
-          return;
-        }
-        if (Array.isArray(error.response.data)) {
-          const errorListItems = error.response.data
-            .filter(err => err.description)
-            .map((err, index) => (<li key={index}>{err.description}</li>));
-          setError(errorListItems);
+          if (status === 401) {
+            localStorage.removeItem("authToken");
+            router.replace("/login");
+            setError(<li>{"Nieupoważniony dostęp. Zaloguj się ponownie."}</li>);
+            return;
+          }
+          if (Array.isArray(error.response.data)) {
+            const errorListItems = error.response.data
+              .filter((err) => err.description)
+              .map((err, index) => <li key={index}>{err.description}</li>);
+            setError(errorListItems);
+          } else {
+            setError(
+              <li>{customErrorMessage ?? "Błąd połączenia z serwerem"}</li>,
+            );
+          }
         } else {
-          setError(<li>{customErrorMessage ?? 'Błąd połączenia z serwerem'}</li>);
+          setError(<li>{"Błąd"}</li>);
         }
       } else {
-        setError(<li>{'Błąd'}</li>)
+        setError(<li>{"Nieoczekiwany błąd"}</li>);
       }
-    } else {
-      setError(<li>{'Nieoczekiwany błąd'}</li>);
-    }
-  }, []);
+    },
+    [],
+  );
 
-  const fetchProjectDetails = useCallback(async (id: string | null) => {
-    if (!id) {
-      setProject(null);
-      return;
-    }
-    setLoading(true);
-    setError(null);
-    try {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        setLoading(false);
-        router.replace('/login');
+  const fetchProjectDetails = useCallback(
+    async (id: string | null) => {
+      if (!id) {
+        setProject(null);
         return;
       }
-      const response = await axios.get(`/api/projects/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setProject(response.data);
-      setSelectedProjectId(id);
-    }
-    catch (error) {
-      handleApiError(error);
-    } finally {
-      setLoading(false);
-    }
-  }, [handleApiError]);
+      setLoading(true);
+      setError(null);
+      try {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+          setLoading(false);
+          router.replace("/login");
+          return;
+        }
+        const response = await axios.get(`/api/projects/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setProject(response.data);
+        setSelectedProjectId(id);
+      } catch (error) {
+        handleApiError(error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [handleApiError],
+  );
 
   useEffect(() => {
     fetchProjectDetails(selectedProjectId);
-  }, [selectedProjectId,fetchProjectDetails]);
+  }, [selectedProjectId, fetchProjectDetails]);
 
   const fetchTasks = useCallback(async () => {
     if (!project) {
@@ -118,22 +137,24 @@ export const ProjectProvider = ({ children }: any) => {
       return;
     }
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem("authToken");
       if (!token) {
         setLoading(false);
-        router.replace('/login');
+        router.replace("/login");
         return;
       }
-      const response = await axios.get(`/api/assignments/projects/${project.id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        `/api/assignments/projects/${project.id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       setTasks(response.data);
-    }
-    catch (error) {
+    } catch (error) {
       if (axios.isAxiosError(error)) {
         handleApiError(error);
       } else {
-        setError(<li>{'Nieoczekiwany błąd'}</li>);
+        setError(<li>{"Nieoczekiwany błąd"}</li>);
       }
     } finally {
       setLoading(false);
@@ -144,37 +165,48 @@ export const ProjectProvider = ({ children }: any) => {
     fetchTasks();
   }, [selectedProjectId, fetchTasks]);
 
-  const fetchMembers = useCallback(async() => {
-
+  const fetchMembers = useCallback(async () => {
     if (!project) {
       setMembers([]);
       return;
     }
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem("authToken");
       if (!token) {
         setLoading(false);
-        router.replace('/login');
+        router.replace("/login");
         return;
       }
       const response = await axios.get(`/api/project-teams/${project.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMembers(response.data);
-    }
-    catch (error) {
+    } catch (error) {
       handleApiError(error);
     } finally {
       setLoading(false);
     }
-  },[project, handleApiError]);
+  }, [project, handleApiError]);
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchMembers();
-  },[selectedProjectId, fetchMembers]);
+  }, [selectedProjectId, fetchMembers]);
 
   return (
-    <ProjectContext.Provider value={{ project, tasks, members, loading, error, selectedProjectId, setSelectedProjectId, fetchProjectDetails, fetchTasks, fetchMembers }}>
+    <ProjectContext.Provider
+      value={{
+        project,
+        tasks,
+        members,
+        loading,
+        error,
+        selectedProjectId,
+        setSelectedProjectId,
+        fetchProjectDetails,
+        fetchTasks,
+        fetchMembers,
+      }}
+    >
       {children}
     </ProjectContext.Provider>
   );
@@ -183,7 +215,7 @@ export const ProjectProvider = ({ children }: any) => {
 export const useProject = () => {
   const context = useContext(ProjectContext);
   if (!context) {
-    throw new Error('useProject must be used within a ProjectProvider');
+    throw new Error("useProject must be used within a ProjectProvider");
   }
   return context;
 };
