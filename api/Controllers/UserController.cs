@@ -43,7 +43,8 @@ public class UserController : ControllerBase
   public async Task<IActionResult> GetUserById([FromRoute] string id)
   {
     var user = await _userRepository.GetByIdAsync(id);
-    if (user is null) {
+    if (user is null)
+    {
       return NotFound("User not found");
     }
     return Ok(user.ToUserDto());

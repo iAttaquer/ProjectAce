@@ -1,4 +1,4 @@
-CREATE PROCEDURE delete_project(project_id uuid)
+CREATE OR REPLACE FUNCTION delete_project(project_id uuid, user_id TEXT)
 LANGUAGE plpgsql
 as $$
 DECLARE

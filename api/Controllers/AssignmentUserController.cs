@@ -45,22 +45,27 @@ public class AssignmentUsersController : ControllerBase
   [ProducesResponseType(StatusCodes.Status403Forbidden)]
   public async Task<IActionResult> AddMemberToAssignment([FromRoute] Guid assignmentId, [FromRoute] string memberId)
   {
-    if (!ModelState.IsValid) {
+    if (!ModelState.IsValid)
+    {
       return BadRequest();
     }
     var assignment = await _assignmentRepo.GetByIdAsync(assignmentId);
-    if (assignment is null) {
+    if (assignment is null)
+    {
       return NotFound("Assignment not found");
     }
     var member = await _userRepo.GetByIdAsync(memberId);
-    if (member is null) {
+    if (member is null)
+    {
       return NotFound("User not found");
     }
-    var user = (AppUser)HttpContext.Items["User"];
-    if (!await _projectTeamRepo.IsMemberInProject(assignment.ProjectId, user.Id)) {
+    var user = HttpContext.Items["User"] as AppUser;
+    if (!await _projectTeamRepo.IsMemberInProject(assignment.ProjectId, user.Id))
+    {
       return Forbid();
     }
-    if (await _assignmentUserRepo.IsMemeberAssignedTo(assignmentId, memberId)) {
+    if (await _assignmentUserRepo.IsMemeberAssignedTo(assignmentId, memberId))
+    {
       return BadRequest("User is already assigned to assignment");
     }
     await _assignmentUserRepo.CreateAsync(new AssignmentUser
@@ -86,15 +91,18 @@ public class AssignmentUsersController : ControllerBase
   [ProducesResponseType(StatusCodes.Status404NotFound)]
   public async Task<IActionResult> GetAssignmentUsers([FromRoute] Guid assignmentId)
   {
-    if (!ModelState.IsValid) {
+    if (!ModelState.IsValid)
+    {
       return BadRequest(ModelState);
     }
     var assignment = await _assignmentRepo.GetByIdAsync(assignmentId);
-    if (assignment is null) {
+    if (assignment is null)
+    {
       return NotFound("Assignment not found");
     }
-    var user = (AppUser)HttpContext.Items["User"];
-    if (!await _projectTeamRepo.IsMemberInProject(assignment.ProjectId, user.Id)) {
+    var user = HttpContext.Items["User"] as AppUser;
+    if (!await _projectTeamRepo.IsMemberInProject(assignment.ProjectId, user.Id))
+    {
       return Forbid();
     }
     var users = await _assignmentUserRepo.GetAllAsync(assignmentId);
@@ -117,22 +125,27 @@ public class AssignmentUsersController : ControllerBase
   [ProducesResponseType(StatusCodes.Status404NotFound)]
   public async Task<IActionResult> RemoveMemberFromAssignment([FromRoute] Guid assignmentId, [FromRoute] string memberId)
   {
-    if (!ModelState.IsValid) {
+    if (!ModelState.IsValid)
+    {
       return BadRequest(ModelState);
     }
     var assignment = await _assignmentRepo.GetByIdAsync(assignmentId);
-    if (assignment is null) {
+    if (assignment is null)
+    {
       return NotFound("Assignment not found");
     }
     var member = await _userRepo.GetByIdAsync(memberId);
-    if (member is null) {
+    if (member is null)
+    {
       return NotFound("User not found");
     }
-    var user = (AppUser)HttpContext.Items["User"];
-    if (!await _projectTeamRepo.IsMemberInProject(assignment.ProjectId, user.Id)) {
+    var user = HttpContext.Items["User"] as AppUser;
+    if (!await _projectTeamRepo.IsMemberInProject(assignment.ProjectId, user.Id))
+    {
       return Forbid();
     }
-    if (!await _assignmentUserRepo.IsMemeberAssignedTo(assignmentId, memberId)) {
+    if (!await _assignmentUserRepo.IsMemeberAssignedTo(assignmentId, memberId))
+    {
       return NotFound("User is not assigned to assignment");
     }
     await _assignmentUserRepo.DeleteAsync(new AssignmentUser
